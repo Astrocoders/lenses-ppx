@@ -1,11 +1,11 @@
 {
   "name": "lenses-ppx",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "bsb -make-world -backend native",
     "watch": "bsb -make-world -w",
-		"postinstall": "npm run build && cp lib/bs/native/lensesppx.native ppx",
+    "postinstall": "npm run build && cp lib/bs/native/lensesppx.native ppx",
     "dev:rewriter": "ocamlfind ppx_tools/rewriter lib/bs/native/lensesppx.native test/Test.ml",
     "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
   },
