@@ -1,0 +1,19 @@
+{
+  "name": "lenses-ppx",
+  "version": "0.1.0",
+  "scripts": {
+    "clean": "bsb -clean-world",
+    "build": "bsb -make-world",
+    "watch": "bsb -make-world -w",
+    "dev:rewriter": "ocamlfind ppx_tools/rewriter lib/bs/native/lensesppx.native test/Test.ml",
+    "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
+  },
+  "keywords": [
+    "BuckleScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "bsb-native": "^4.0.7000"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "lenses-ppx",
+  "sources": [
+    {
+      "dir": "src",
+      "type": "ppx",
+      "ppx": ["LensesPpx"]
+    },
+    {
+      "dir": "test",
+      "type": "dev",
+      "ppx": ["LensesPpx"],
+      "backend": "js"
+    }
+  ],
+  "entries": [
+    {
+      "backend": "native",
+      "type": "ppx",
+      "main-module": "LensesPpx"
+    },
+    {
+    "backend": "js",
+    "main-module": "Test"
+  }
+  ],
+  "refmt": 3,
+  "ocaml-dependencies": ["compiler-libs"]
+}
