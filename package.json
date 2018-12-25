@@ -14,7 +14,7 @@
   ],
   "author": "",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "bsb-native": "^4.0.7000"
   }
 }
