@@ -9,7 +9,6 @@
     {
       "dir": "test",
       "type": "dev",
-      "ppx": ["LensesPpx"],
       "backend": "js"
     }
   ],
@@ -20,9 +19,9 @@
       "main-module": "LensesPpx"
     },
     {
-    "backend": "js",
-    "main-module": "Test"
-  }
+			"backend": "js",
+			"main-module": "Test"
+		}
   ],
   "refmt": 3,
   "ocaml-dependencies": ["compiler-libs"]

@@ -6,7 +6,7 @@ open Ast_helper;
 let gadtFieldName = "field";
 let loc = Location.none;
 
-let createLensSet = (~typeName, ~fields) => {
+let createSetLens = (~typeName, ~fields) => {
   pstr_loc: Location.none,
   pstr_desc:
     Pstr_value(
@@ -156,7 +156,8 @@ let createLensSet = (~typeName, ~fields) => {
                                                 pexp_attributes: [],
                                                 pexp_desc:
                                                   Pexp_ident({
-                                                    txt: Lident("field"),
+                                                    txt:
+                                                      Lident(gadtFieldName),
                                                     loc,
                                                   }),
                                               },
@@ -264,7 +265,7 @@ let createLensSet = (~typeName, ~fields) => {
                                     ptyp_attributes: [],
                                     ptyp_desc:
                                       Ptyp_constr(
-                                        {txt: Lident("field"), loc},
+                                        {txt: Lident(gadtFieldName), loc},
                                         [
                                           {
                                             ptyp_loc: loc,
@@ -318,7 +319,7 @@ let createLensSet = (~typeName, ~fields) => {
     ),
 };
 
-let createLensGet = (~typeName, ~fields) => {
+let createGetLens = (~typeName, ~fields) => {
   pstr_loc: Location.none,
   pstr_desc:
     Pstr_value(
@@ -571,7 +572,7 @@ let createGadt = (~fields) => {
         ptype_loc: Location.none,
         ptype_attributes: [],
         ptype_name: {
-          txt: "field",
+          txt: gadtFieldName,
           loc: Location.none,
         },
         ptype_params: [
@@ -602,7 +603,7 @@ let createGadt = (~fields) => {
                     ptyp_attributes: [],
                     ptyp_desc:
                       Ptyp_constr(
-                        {txt: Lident("field"), loc: Location.none},
+                        {txt: Lident(gadtFieldName), loc: Location.none},
                         [
                           {
                             ptyp_desc: field.pld_type.ptyp_desc,
@@ -633,8 +634,8 @@ let createModule = (~typeDef, ~typeName, ~fields, ~loc) =>
         Pmod_structure([
           typeDef,
           createGadt(~fields),
-          createLensGet(~typeName, ~fields),
-          createLensSet(~typeName, ~fields),
+          createGetLens(~typeName, ~fields),
+          createSetLens(~typeName, ~fields),
         ]),
       ),
     ),
@@ -642,62 +643,54 @@ let createModule = (~typeDef, ~typeName, ~fields, ~loc) =>
 
 let lensesMapper = _ => {
   ...default_mapper,
-  structure_item: (mapper, expr) =>
+  structure: (mapper, expr) =>
     switch (expr) {
-    | {
-        pstr_desc:
-          Pstr_module({
-            pmb_expr: {
-              pmod_desc:
-                Pmod_structure([
-                  {
-                    pstr_desc:
-                      Pstr_eval(
-                        {
-                          pexp_loc,
-                          pexp_desc: Pexp_extension(({txt: "lenses"}, _)),
-                        },
-                        _,
-                      ),
-                  },
-                  {
-                    pstr_desc:
-                      Pstr_type([
-                        {
-                          ptype_name: {txt: typeName},
-                          ptype_kind: Ptype_record(fields),
-                        },
-                      ]),
-                  },
-                ]),
-            },
-          }),
-      } =>
-      createModule(
-        ~typeDef={
-          pstr_loc: Location.none,
+    | [
+        {
+          pstr_desc:
+            Pstr_eval(
+              {pexp_loc, pexp_desc: Pexp_extension(({txt: "lenses"}, _))},
+              _,
+            ),
+        },
+        {
           pstr_desc:
             Pstr_type([
               {
-                ptype_name: {
-                  txt: typeName,
-                  loc: Location.none,
-                },
+                ptype_name: {txt: typeName},
                 ptype_kind: Ptype_record(fields),
-                ptype_params: [],
-                ptype_cstrs: [],
-                ptype_private: Public,
-                ptype_manifest: None,
-                ptype_attributes: [],
-                ptype_loc: Location.none,
               },
             ]),
         },
-        ~typeName,
-        ~fields,
-        ~loc=pexp_loc,
-      )
-    | _ => default_mapper.structure_item(mapper, expr)
+        ...rest,
+      ] => [
+        createModule(
+          ~typeDef={
+            pstr_loc: Location.none,
+            pstr_desc:
+              Pstr_type([
+                {
+                  ptype_name: {
+                    txt: typeName,
+                    loc: Location.none,
+                  },
+                  ptype_kind: Ptype_record(fields),
+                  ptype_params: [],
+                  ptype_cstrs: [],
+                  ptype_private: Public,
+                  ptype_manifest: None,
+                  ptype_attributes: [],
+                  ptype_loc: Location.none,
+                },
+              ]),
+          },
+          ~typeName,
+          ~fields,
+          ~loc=pexp_loc,
+        ),
+        ...rest,
+      ]
+    | _ => default_mapper.structure(mapper, expr)
     },
 };
 
