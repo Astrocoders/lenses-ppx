@@ -45,4 +45,10 @@ module StateLenses = {
       | Age => {...state, age: value}
       };
 };
+
+open StateLenses;
+
+let state = {email: "fakeniquels@brazil.gov.br", age: 0};
+
+Js.log(state->get(Email))
 ```
