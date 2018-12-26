@@ -50,5 +50,6 @@ open StateLenses;
 
 let state = {email: "fakeniquels@brazil.gov.br", age: 0};
 
-Js.log(state->get(Email))
+Js.log(state->get(Email));
+Js.log(state->get(Age));
 ```
