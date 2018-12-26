@@ -643,54 +643,57 @@ let createModule = (~typeDef, ~typeName, ~fields, ~loc) =>
 
 let lensesMapper = _ => {
   ...default_mapper,
-  structure: (mapper, expr) =>
+  structure_item: (mapper, expr) =>
     switch (expr) {
-    | [
-        {
-          pstr_desc:
-            Pstr_eval(
-              {pexp_loc, pexp_desc: Pexp_extension(({txt: "lenses"}, _))},
-              _,
-            ),
-        },
-        {
+    | {
+        pstr_desc:
+          Pstr_eval(
+            {
+              pexp_loc,
+              pexp_desc:
+                Pexp_extension((
+                  {txt: "lenses"},
+                  PStr([
+                    {
+                      pstr_desc:
+                        Pstr_type([
+                          {
+                            ptype_name: {txt: typeName},
+                            ptype_kind: Ptype_record(fields),
+                          },
+                        ]),
+                    },
+                  ]),
+                )),
+            },
+            _,
+          ),
+      } =>
+      createModule(
+        ~typeDef={
+          pstr_loc: Location.none,
           pstr_desc:
             Pstr_type([
               {
-                ptype_name: {txt: typeName},
+                ptype_name: {
+                  txt: typeName,
+                  loc: Location.none,
+                },
                 ptype_kind: Ptype_record(fields),
+                ptype_params: [],
+                ptype_cstrs: [],
+                ptype_private: Public,
+                ptype_manifest: None,
+                ptype_attributes: [],
+                ptype_loc: Location.none,
               },
             ]),
         },
-        ...rest,
-      ] => [
-        createModule(
-          ~typeDef={
-            pstr_loc: Location.none,
-            pstr_desc:
-              Pstr_type([
-                {
-                  ptype_name: {
-                    txt: typeName,
-                    loc: Location.none,
-                  },
-                  ptype_kind: Ptype_record(fields),
-                  ptype_params: [],
-                  ptype_cstrs: [],
-                  ptype_private: Public,
-                  ptype_manifest: None,
-                  ptype_attributes: [],
-                  ptype_loc: Location.none,
-                },
-              ]),
-          },
-          ~typeName,
-          ~fields,
-          ~loc=pexp_loc,
-        ),
-        ...rest,
-      ]
-    | _ => default_mapper.structure(mapper, expr)
+        ~typeName,
+        ~fields,
+        ~loc=pexp_loc,
+      )
+    | _ => default_mapper.structure_item(mapper, expr)
     },
 };
 

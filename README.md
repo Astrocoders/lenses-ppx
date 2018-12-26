@@ -14,11 +14,10 @@ npm run watch
 In
 ```reason
 module FormConfig = {
-  [%lenses]
-  type state = {
+  [%lenses type state = {
     email: string,
     age: int,
-  };
+  }]
 }
 ```
 
