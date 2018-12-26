@@ -186,7 +186,6 @@ let createSetLens = (~typeName, ~fields) => {
                                                     pexp_loc: loc,
                                                     pexp_attributes: [],
                                                     pexp_desc:
-                                                      [@implicit_arity]
                                                       Pexp_record(
                                                         [
                                                           (
@@ -298,7 +297,6 @@ let createSetLens = (~typeName, ~fields) => {
                                           ptyp_loc: loc,
                                           ptyp_attributes: [],
                                           ptyp_desc:
-                                            [@implicit_arity]
                                             Ptyp_constr(
                                               {txt: Lident("state"), loc},
                                               [],
