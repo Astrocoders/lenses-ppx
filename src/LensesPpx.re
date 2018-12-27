@@ -249,7 +249,7 @@ let createSetLens = (~typeName, ~fields) => {
                               ptyp_attributes: [],
                               ptyp_desc:
                                 Ptyp_constr(
-                                  {txt: Lident("state"), loc},
+                                  {txt: Lident(typeName), loc},
                                   [],
                                 ),
                             },
@@ -298,7 +298,7 @@ let createSetLens = (~typeName, ~fields) => {
                                           ptyp_attributes: [],
                                           ptyp_desc:
                                             Ptyp_constr(
-                                              {txt: Lident("state"), loc},
+                                              {txt: Lident(typeName), loc},
                                               [],
                                             ),
                                         },
