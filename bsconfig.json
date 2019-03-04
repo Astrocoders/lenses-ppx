@@ -19,10 +19,11 @@
       "main-module": "LensesPpx"
     },
     {
-			"backend": "js",
-			"main-module": "Test"
-		}
+      "backend": "js",
+      "main-module": "Test"
+    }
   ],
   "refmt": 3,
+  "ppx-flags": ["./ppx"],
   "ocaml-dependencies": ["compiler-libs"]
 }

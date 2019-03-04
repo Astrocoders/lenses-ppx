@@ -621,51 +621,36 @@ let createGadt = (~fields) => {
     ]),
 };
 
-let createModule = (~typeDef, ~typeName, ~fields, ~loc) =>
-  Str.module_(
-    ~loc,
-    Mb.mk(
-      ~loc=Location.none,
-      ~attrs=[],
-      {txt: String.capitalize(typeName) ++ "Lenses", loc: Location.none},
-      Mod.mk(
-        Pmod_structure([
-          typeDef,
-          createGadt(~fields),
-          createGetLens(~typeName, ~fields),
-          createSetLens(~typeName, ~fields),
-        ]),
-      ),
-    ),
+let createModule = (~typeDef, ~typeName, ~fields) =>
+  Mod.mk(
+    Pmod_structure([
+      typeDef,
+      createGadt(~fields),
+      createGetLens(~typeName, ~fields),
+      createSetLens(~typeName, ~fields),
+    ]),
   );
 
 let lensesMapper = _ => {
   ...default_mapper,
-  structure_item: (mapper, expr) =>
+  module_expr: (mapper, expr) =>
     switch (expr) {
     | {
-        pstr_desc:
-          Pstr_eval(
-            {
-              pexp_loc,
-              pexp_desc:
-                Pexp_extension((
-                  {txt: "lenses"},
-                  PStr([
+        pmod_desc:
+          Pmod_extension((
+            {txt: "lenses"},
+            PStr([
+              {
+                pstr_desc:
+                  Pstr_type([
                     {
-                      pstr_desc:
-                        Pstr_type([
-                          {
-                            ptype_name: {txt: typeName},
-                            ptype_kind: Ptype_record(fields),
-                          },
-                        ]),
+                      ptype_name: {txt: typeName},
+                      ptype_kind: Ptype_record(fields),
                     },
                   ]),
-                )),
-            },
-            _,
-          ),
+              },
+            ]),
+          )),
       } =>
       createModule(
         ~typeDef={
@@ -689,9 +674,8 @@ let lensesMapper = _ => {
         },
         ~typeName,
         ~fields,
-        ~loc=pexp_loc,
       )
-    | _ => default_mapper.structure_item(mapper, expr)
+    | _ => default_mapper.module_expr(mapper, expr)
     },
 };
 
