@@ -1,16 +1,14 @@
 module FormConfig = struct
-  [%lenses
-
-  type state = {
+  module State = [%lenses
+  type t = {
     email: string;
     age: int;
   };;
 ]
 end;;
 
-[%lenses
-
-  type user = {
+module User = [%lenses
+  type t = {
     email: string;
     age: int;
   };;
