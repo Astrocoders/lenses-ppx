@@ -13,10 +13,12 @@ npm run watch
 
 In
 ```reason
-[%lenses type state = {
-  email: string,
-  age: int,
-}]
+module State = [%lenses
+ type state = {
+   email: string,
+   age: int,
+ }
+]
 ```
 
 Out
