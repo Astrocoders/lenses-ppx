@@ -24,6 +24,5 @@
     }
   ],
   "refmt": 3,
-  "ppx-flags": ["./ppx"],
   "ocaml-dependencies": ["compiler-libs"]
 }
