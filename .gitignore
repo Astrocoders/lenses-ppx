@@ -26,3 +26,6 @@ lib/bs
 .bsb.lock
 node_modules
 /ppx
+_esy
+_build
+lenses-ppx.install

@@ -1,0 +1,6 @@
+(executable
+  (name bin)
+  (public_name lenses-ppx)
+  (libraries lenses-ppx.lib)
+  (ocamlopt_flags ( -linkall ))
+)
