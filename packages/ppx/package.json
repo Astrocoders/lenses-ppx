@@ -1,9 +1,8 @@
 {
   "name": "lenses-ppx",
-  "version": "2.0.1-alpha.2",
+  "version": "3.0.0",
   "scripts": {
     "build": "esy build",
-    "postinstall": "npm run build",
     "dev:rewriter": "ocamlfind ppx_tools/rewriter _build/default/bin/bin.exe test/Test.ml",
     "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
   }
