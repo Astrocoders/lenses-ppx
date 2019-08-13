@@ -4,17 +4,17 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '8.9'
-  - script: npm install -g esy@0.4.3
+  - script: cd packages/ppx && npm install -g esy@0.4.3
     displayName: 'npm install -g esy@0.4.3'
-  - script: esy install
+  - script: cd packages/ppx && esy install
     displayName: 'esy install'
-  - script: esy build
+  - script: cd packages/ppx && esy build
     displayName: 'esy build'
-  - script: esy test
+  - script: cd packages/ppx && esy test
     displayName: 'esy test'
-  - script: esy ls-libs
+  - script:cd packages/ppx &&  esy ls-libs
     continueOnError: true
     displayName: 'Show all libraries including this package lib'
-  - script: esy release
+  - script: cd packages/ppx && esy release
     displayName: 'Test Creation of Prebuilt Binary Releases'
     continueOnError: true
