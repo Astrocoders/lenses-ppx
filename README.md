@@ -1,5 +1,3 @@
-
-
 # Build
 ```
 npm run build
@@ -13,7 +11,7 @@ npm run watch
 
 In
 ```reason
-module State = [%lenses
+module StateLenses = [%lenses
  type state = {
    email: string,
    age: int,
