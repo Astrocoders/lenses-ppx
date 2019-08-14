@@ -1,0 +1,31 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node_version: [8, 10, 12]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v1
+      with:
+        version: ${{ matrix.node_version }}
+    - name: esy install and build
+      run: |
+        npm i -g esy
+        cd packages/ppx && esy install
+        cd packages/ppx && esy build
+    - name: Publish
+      env:
+        - NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        mkdir lenses-ppx
+        echo "{name: \"lenses-ppx\", version: ${{ matrix.node_version }}}" > lenses-ppx/package.json
+        mv packages/ppx/_build/bin/bin.exe lenses-ppx/ppx
+        cd lenses-ppx && npm publish
