@@ -23,7 +23,7 @@ jobs:
         cd packages/ppx && esy build
     - name: Publish
       env:
-        - NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         mkdir lenses-ppx
         echo "{name: \"lenses-ppx\", version: ${{ matrix.node_version }}}" > lenses-ppx/package.json
