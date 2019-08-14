@@ -19,13 +19,20 @@ jobs:
     - name: esy install and build
       run: |
         npm i -g esy
-        cd packages/ppx && esy install
-        cd packages/ppx && esy build
+        cd $GITHUB_WORKSPACE/packages/ppx && esy install
+        cd $GITHUB_WORKSPACE/packages/ppx && esy build
     - name: Publish
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
+      PACKAGE_VERSION=$(cat package.json \
+             | grep version \
+             | head -1 \
+             | awk -F: '{ print $2 }' \
+             | sed 's/[",]//g'
+             | tr -d '[[:space:]]')
+
         mkdir lenses-ppx
-        echo "{name: \"lenses-ppx\", version: ${{ matrix.node_version }}}" > lenses-ppx/package.json
-        mv packages/ppx/_build/bin/bin.exe lenses-ppx/ppx
-        cd lenses-ppx && npm publish
+        echo "{name: \"lenses-ppx\", version: \"$PACKAGE_VERSION\"" > $GITHUB_WORKSPACE/lenses-ppx/package.json
+        mv $GITHUB_WORKSPACE/packages/ppx/_build/bin/bin.exe lenses-ppx/ppx
+        cd $GITHUB_WORKSPACE/lenses-ppx && npm publish --tag ${{ matrix.node_version }}}
