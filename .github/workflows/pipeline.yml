@@ -25,7 +25,7 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
-        PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json \
+        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json \
              | grep version \
              | head -1 \
              | awk -F: '{ print $2 }' \
