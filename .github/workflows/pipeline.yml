@@ -25,13 +25,7 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
-        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json \
-             | grep version \
-             | head -1 \
-             | awk -F: '{ print $2 }' \
-             | sed 's/[",]//g'
-             | tr -d '[[:space:]]')
-
+        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]'
         mkdir lenses-ppx
         echo "{name: \"lenses-ppx\", version: \"$PACKAGE_VERSION\"" > $GITHUB_WORKSPACE/lenses-ppx/package.json
         mv $GITHUB_WORKSPACE/packages/ppx/_build/bin/bin.exe lenses-ppx/ppx
