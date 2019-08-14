@@ -26,7 +26,7 @@ jobs:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-        export RELEASE_TAG=$(echo ${{ matrix.node_version }} | tr "-" "\n" | head -n 1)
+        export RELEASE_TAG=$(uname | tr '[A-Z]' '[a-z]')
         export VERSION="$PACKAGE_VERSION-$RELEASE_TAG.1"
         echo "Releasing $VERSION, tag $RELEASE_TAG"
         mkdir $GITHUB_WORKSPACE/lenses-ppx
