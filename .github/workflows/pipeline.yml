@@ -25,8 +25,9 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
-        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]'
+        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+        export RELEASE_TAG=$(echo ${{ matrix.node_version }} | tr "-" "\n" | head -n 1)
         mkdir lenses-ppx
-        echo "{name: \"lenses-ppx\", version: \"$PACKAGE_VERSION\"" > $GITHUB_WORKSPACE/lenses-ppx/package.json
+        echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\"}" > $GITHUB_WORKSPACE/lenses-ppx/package.json 
         mv $GITHUB_WORKSPACE/packages/ppx/_build/bin/bin.exe lenses-ppx/ppx
-        cd $GITHUB_WORKSPACE/lenses-ppx && npm publish --tag ${{ matrix.node_version }}}
+        cd $GITHUB_WORKSPACE/lenses-ppx && npm publish --tag $RELEASE_TAG
