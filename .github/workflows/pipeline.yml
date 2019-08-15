@@ -22,7 +22,7 @@ jobs:
         npm i -g esy
         cd $GITHUB_WORKSPACE/packages/ppx && esy install
         cd $GITHUB_WORKSPACE/packages/ppx && esy build
-        mkdir -p $OS/binaries
+        mkdir -p $HOME/binaries
         mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe $HOME/binaries/$OS
 
   release:
