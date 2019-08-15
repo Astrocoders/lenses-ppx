@@ -17,21 +17,35 @@ jobs:
       with:
         version: ${{ matrix.node_version }}
     - name: esy install and build
+      volumes:
+        - /data/binaries
       run: |
+        export OS=$(uname | tr '[A-Z]' '[a-z]')
         npm i -g esy
         cd $GITHUB_WORKSPACE/packages/ppx && esy install
         cd $GITHUB_WORKSPACE/packages/ppx && esy build
+        mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe /data/binaries/$OS
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js 10
+      uses: actions/setup-node@v1
+      with:
+        version: 10
     - name: Publish
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      volumes:
+        - /data/binaries
       run: |
         export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-        export RELEASE_TAG=$(uname | tr '[A-Z]' '[a-z]')
-        export VERSION="$PACKAGE_VERSION-$RELEASE_TAG.1"
-        export NPM_TOKEN=$NPM_TOKEN
-        echo "Releasing $VERSION, tag $RELEASE_TAG"
-        mkdir $GITHUB_WORKSPACE/lenses-ppx
-        echo "{\"name\": \"lenses-ppx\", \"version\": \"$VERSION\"}" > $GITHUB_WORKSPACE/lenses-ppx/package.json
-        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $GITHUB_WORKSPACE/lenses-ppx/.npmrc
+        export PACKAGE_DIR=$GITHUB_WORKSPACE/lenses-ppx
+        mkdir $PACKAGE_DIR
+        mv /data/binaries/* $PACKAGE_DIR
+        echo "{\"name\": \"lenses-ppx\", \"version\": \"$VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $PACKAGE_DIR/package.json
+        
+        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $PACKAGE_DIR/.npmrc
         mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe $GITHUB_WORKSPACE/lenses-ppx/ppx
-        cd $GITHUB_WORKSPACE/lenses-ppx && npm publish --access public
+        cd $GITHUB_WORKSPACE/lenses-ppx && npm publish
