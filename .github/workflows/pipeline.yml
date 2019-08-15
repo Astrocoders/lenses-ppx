@@ -17,17 +17,17 @@ jobs:
       with:
         version: ${{ matrix.node_version }}
     - name: esy install and build
-      volumes:
-        - /data/binaries
       run: |
         export OS=$(uname | tr '[A-Z]' '[a-z]')
         npm i -g esy
         cd $GITHUB_WORKSPACE/packages/ppx && esy install
         cd $GITHUB_WORKSPACE/packages/ppx && esy build
-        mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe /data/binaries/$OS
+        mkdir -p $OS/binaries
+        mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe $HOME/binaries/$OS
 
   release:
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
     - uses: actions/checkout@master
     - name: Use Node.js 10
@@ -37,13 +37,11 @@ jobs:
     - name: Publish
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      volumes:
-        - /data/binaries
       run: |
         export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
         export PACKAGE_DIR=$GITHUB_WORKSPACE/lenses-ppx
         mkdir $PACKAGE_DIR
-        mv /data/binaries/* $PACKAGE_DIR
+        mv $HOME/binaries/* $PACKAGE_DIR
         echo "{\"name\": \"lenses-ppx\", \"version\": \"$VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $PACKAGE_DIR/package.json
         
         echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $PACKAGE_DIR/.npmrc
