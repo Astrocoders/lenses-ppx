@@ -20,10 +20,10 @@ jobs:
       run: |
         export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
         git checkout -b release/$PACKAGE_VERSION
-        g rm -rf --cached .
+        git rm -rf --cached .
         echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $GITHUB_WORKSPACE/package.json
         git add $GITHUB_WORKSPACE
-        g commit "Prepare release"
+        git commit "Prepare release"
         git push origin release/$PACKAGE_VERSION
 
   build:
@@ -49,7 +49,7 @@ jobs:
         cd $GITHUB_WORKSPACE/packages/ppx && esy build
         mkdir -p $HOME/binaries
         mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe $HOME/binaries/$OS
-        gco release/$PACKAGE_VERSION
+        git checkout release/$PACKAGE_VERSION
         mv $HOME/binaries/$OS $GITHUB_WORKSPACE/$OS
         git add .
         git commit -m "Add $OS"
