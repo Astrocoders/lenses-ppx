@@ -1,10 +1,34 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js 10
+      uses: actions/setup-node@v1
+      with:
+        version: 10
+    - name: Prepare
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+        git checkout -b release/$PACKAGE_VERSION
+        g rm -rf --cached .
+        echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $GITHUB_WORKSPACE/package.json
+        git add $GITHUB_WORKSPACE
+        g commit "Prepare release"
+        git push origin release/$PACKAGE_VERSION
+
   build:
     runs-on: ${{ matrix.os }}
+    needs: [prepare]
     strategy:
       matrix:
         node_version: [10]
@@ -18,12 +42,18 @@ jobs:
         version: ${{ matrix.node_version }}
     - name: esy install and build
       run: |
+        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
         export OS=$(uname | tr '[A-Z]' '[a-z]')
         npm i -g esy
         cd $GITHUB_WORKSPACE/packages/ppx && esy install
         cd $GITHUB_WORKSPACE/packages/ppx && esy build
         mkdir -p $HOME/binaries
         mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe $HOME/binaries/$OS
+        gco release/$PACKAGE_VERSION
+        mv $HOME/binaries/$OS $GITHUB_WORKSPACE/$OS
+        git add .
+        git commit -m "Add $OS"
+        git push origin release/$PACKAGE_VERSION
 
   release:
     runs-on: ubuntu-latest
@@ -39,11 +69,6 @@ jobs:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-        export PACKAGE_DIR=$GITHUB_WORKSPACE/lenses-ppx
-        mkdir $PACKAGE_DIR
-        mv $HOME/binaries/* $PACKAGE_DIR
-        echo "{\"name\": \"lenses-ppx\", \"version\": \"$VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $PACKAGE_DIR/package.json
-        
-        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $PACKAGE_DIR/.npmrc
-        mv $GITHUB_WORKSPACE/packages/ppx/_build/default/bin/bin.exe $GITHUB_WORKSPACE/lenses-ppx/ppx
-        cd $GITHUB_WORKSPACE/lenses-ppx && npm publish
+        git checkout release/$PACKAGE_VERSION
+        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $GITHUB_WORKSPACE/.npmrc
+        npm publish
