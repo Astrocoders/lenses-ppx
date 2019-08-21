@@ -23,7 +23,7 @@ jobs:
         git rm -rf --cached .
         echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $GITHUB_WORKSPACE/package.json
         git add $GITHUB_WORKSPACE
-        git commit "Prepare release"
+        git commit -m "Prepare release"
         git push origin release/$PACKAGE_VERSION
 
   build:
