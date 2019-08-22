@@ -37,12 +37,12 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/download-artifact@master
       with:
-        name: ubuntu-latest
-        path: packages/linux.exe
+        name: ubuntu-latest.exe
+        path: packages/linux
     - uses: actions/download-artifact@master
       with:
         name: macOS-latest.exe
-        path: packages/darwin.exe
+        path: packages/darwin
     - name: Use Node.js 10
       uses: actions/npm@master
       with:
@@ -52,7 +52,7 @@ jobs:
       run: |
         export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
         mkdir -p $GITHUB_WORKSPACE/lenses-ppx
-        mv $GITHUB_WORKSPACE/packages/darwin.exe $GITHUB_WORKSPACE/lenses-ppx
-        mv $GITHUB_WORKSPACE/packages/linux.exe $GITHUB_WORKSPACE/lenses-ppx
+        mv $GITHUB_WORKSPACE/packages/darwin $GITHUB_WORKSPACE/lenses-ppx
+        mv $GITHUB_WORKSPACE/packages/linux $GITHUB_WORKSPACE/lenses-ppx
         echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $GITHUB_WORKSPACE/lenses-ppx/package.json
         npm publish
