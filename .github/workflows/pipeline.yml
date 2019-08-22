@@ -20,8 +20,9 @@ jobs:
         version: ${{ matrix.node_version }}
     - name: esy install and build
       uses: actions/upload-artifact@master
-      with: ${{ matrix.os }}.exe
-      path: packages/ppx/_build/default/bin/bin.exe
+      with: 
+        name: ${{ matrix.os }}.exe
+        path: packages/ppx/_build/default/bin/bin.exe
       run: |
         export OS=$(uname | tr '[A-Z]' '[a-z]')
         npm i -g esy
