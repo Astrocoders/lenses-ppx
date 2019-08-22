@@ -23,6 +23,7 @@ jobs:
       with: 
         name: ${{ matrix.os }}.exe
         path: packages/ppx/_build/default/bin/bin.exe
+    - name: Build
       run: |
         export OS=$(uname | tr '[A-Z]' '[a-z]')
         npm i -g esy
