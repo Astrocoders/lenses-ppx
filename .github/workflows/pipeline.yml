@@ -55,4 +55,4 @@ jobs:
         mv $GITHUB_WORKSPACE/packages/darwin $GITHUB_WORKSPACE/lenses-ppx
         mv $GITHUB_WORKSPACE/packages/linux $GITHUB_WORKSPACE/lenses-ppx
         echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"postinstall\": \"mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx\"}" > $GITHUB_WORKSPACE/lenses-ppx/package.json
-        npm publish
+        cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
