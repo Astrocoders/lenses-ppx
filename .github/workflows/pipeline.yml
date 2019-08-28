@@ -63,8 +63,9 @@ jobs:
         # cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
         cd $GITHUB_WORKSPACE/lenses-ppx/ && npm pack
         mv $GITHUB_WORKSPACE/lenses-ppx/lenses-ppx-$PACKAGE_VERSION.tgz $GITHUB_WORKSPACE/lenses-ppx/package.tgz
-     - name: Save artifacts
+    - name: Save artifacts
       uses: actions/upload-artifact@master
       with: 
         name: package.tgz
-        path: lenses-ppx/package.tgz      
+        path: lenses-ppx/package.tgz 
+
