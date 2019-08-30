@@ -59,7 +59,6 @@ jobs:
         POSTINSTALL="\"if test -f \$(uname | tr '[A-Z]' '[a-z]'); then mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx; fi\""
         echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"postinstall\": $POSTINSTALL}" > $GITHUB_WORKSPACE/lenses-ppx/package.json
         echo "//registry.npmjs.org/:_authToken:${NPM_AUTH_TOKEN}" > $HOME/.npmrc
-        npm whoami
         # cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
         cd $GITHUB_WORKSPACE/lenses-ppx/ && npm pack
         mv $GITHUB_WORKSPACE/lenses-ppx/lenses-ppx-$PACKAGE_VERSION.tgz $GITHUB_WORKSPACE/lenses-ppx/package.tgz
