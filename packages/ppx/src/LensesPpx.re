@@ -574,7 +574,7 @@ let createGadt = (~fields) => {
   pstr_loc: Location.none,
   pstr_desc:
     Pstr_type(
-      Nonrecursive,
+      Recursive,
       [
         {
           ptype_loc: Location.none,
@@ -655,7 +655,7 @@ let lensesMapper = (_, _) => {
               {
                 pstr_desc:
                   Pstr_type(
-                    Nonrecursive,
+                    rec_flag,
                     [
                       {
                         ptype_name: {txt: typeName},
@@ -672,7 +672,7 @@ let lensesMapper = (_, _) => {
           pstr_loc: Location.none,
           pstr_desc:
             Pstr_type(
-              Nonrecursive,
+              rec_flag,
               [
                 {
                   ptype_name: {
