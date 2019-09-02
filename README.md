@@ -1,9 +1,9 @@
 # Install
 Install the last stable version
 ```
-npm install --save-dev lenses-ppx@2.0.0
+npm install --save-dev lenses-ppx@4.0.0
 or
-yarn add lenses-ppx@2.0.0 -D
+yarn add lenses-ppx@4.0.0 -D
 ```
 
 # Build
