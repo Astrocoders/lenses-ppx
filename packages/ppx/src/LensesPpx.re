@@ -164,88 +164,143 @@ let createSetLens = (~typeName, ~fields) => {
                                                     loc,
                                                   }),
                                               },
-                                              List.map(
-                                                field =>
-                                                  {
-                                                    pc_lhs: {
-                                                      ppat_loc: Location.none,
-                                                      ppat_attributes: [],
-                                                      ppat_desc:
-                                                        Ppat_construct(
-                                                          {
-                                                            loc,
-                                                            txt:
-                                                              Lident(
-                                                                String.capitalize(
-                                                                  field.
+                                              List.flatten(
+                                                List.map(
+                                                  field =>
+                                                    switch (
+                                                      field.pld_type.ptyp_desc
+                                                    ) {
+                                                    | Ptyp_constr(
+                                                        {
+                                                          txt: Lident("array"),
+                                                        },
+                                                        [inner],
+                                                      ) => [
+                                                        {
+                                                          pc_lhs: {
+                                                            ppat_loc: Location.none,
+                                                            ppat_attributes:
+                                                              [],
+                                                            ppat_desc:
+                                                              Ppat_construct(
+                                                                {
+                                                                  loc,
+                                                                  txt:
+                                                                    Lident(
+                                                                    String.capitalize(
+                                                                    field.
                                                                     pld_name.
                                                                     txt,
-                                                                ),
+                                                                    ),
+                                                                    ),
+                                                                },
+                                                                None,
                                                               ),
                                                           },
-                                                          switch (
-                                                            field.pld_type.
-                                                              ptyp_desc
-                                                          ) {
-                                                          | Ptyp_constr(
-                                                              {
-                                                                txt:
-                                                                  Lident(
-                                                                    "array",
-                                                                  ),
-                                                              },
-                                                              [inner],
-                                                            ) =>
-                                                            Some({
-                                                              ppat_desc:
-                                                                Ppat_var({
-                                                                  txt: "index",
-                                                                  loc,
-                                                                }),
-                                                              ppat_loc: loc,
-                                                              ppat_attributes:
-                                                                [],
-                                                            })
-                                                          | _ => None
-                                                          },
-                                                        ),
-                                                    },
-                                                    pc_guard: None,
-                                                    pc_rhs: {
-                                                      pexp_loc: loc,
-                                                      pexp_attributes: [],
-                                                      pexp_desc:
-                                                        switch (
-                                                          field.pld_type.
-                                                            ptyp_desc
-                                                        ) {
-                                                        | Ptyp_constr(
-                                                            {
-                                                              txt:
-                                                                Lident(
-                                                                  "array",
-                                                                ),
-                                                            },
-                                                            [inner],
-                                                          ) =>
-                                                          Pexp_match(
-                                                            {
-                                                              pexp_desc:
-                                                                Pexp_ident({
-                                                                  txt:
+                                                          pc_guard: None,
+                                                          pc_rhs: {
+                                                            pexp_loc: loc,
+                                                            pexp_attributes:
+                                                              [],
+                                                            pexp_desc:
+                                                              Pexp_record(
+                                                                [
+                                                                  (
+                                                                    {
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    ),
+                                                                    },
+                                                                    {
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    loc,
+                                                                    txt:
                                                                     Lident(
                                                                     "value",
                                                                     ),
-                                                                  loc,
+                                                                    }),
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                                Some({
+                                                                  pexp_loc: loc,
+                                                                  pexp_attributes:
+                                                                    [],
+                                                                  pexp_desc:
+                                                                    Pexp_ident({
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    typeName,
+                                                                    ),
+                                                                    }),
                                                                 }),
-                                                              pexp_loc: loc,
-                                                              pexp_attributes:
-                                                                [],
-                                                            },
-                                                            [
-                                                              {
-                                                                pc_lhs: {
+                                                              ),
+                                                          },
+                                                        },
+                                                        {
+                                                          pc_lhs: {
+                                                            ppat_loc: Location.none,
+                                                            ppat_attributes:
+                                                              [],
+                                                            ppat_desc:
+                                                              Ppat_construct(
+                                                                {
+                                                                  loc,
+                                                                  txt:
+                                                                    Lident(
+                                                                    String.capitalize(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    )
+                                                                    ++ "At",
+                                                                    ),
+                                                                },
+                                                                Some({
                                                                   ppat_desc:
+                                                                    Ppat_var({
+                                                                    txt: "index",
+                                                                    loc,
+                                                                    }),
+                                                                  ppat_loc: loc,
+                                                                  ppat_attributes:
+                                                                    [],
+                                                                }),
+                                                              ),
+                                                          },
+                                                          pc_guard: None,
+                                                          pc_rhs: {
+                                                            pexp_loc: loc,
+                                                            pexp_attributes:
+                                                              [],
+                                                            pexp_desc:
+                                                              Pexp_match(
+                                                                {
+                                                                  pexp_desc:
+                                                                    Pexp_ident({
+                                                                    txt:
+                                                                    Lident(
+                                                                    "value",
+                                                                    ),
+                                                                    loc,
+                                                                    }),
+                                                                  pexp_loc: loc,
+                                                                  pexp_attributes:
+                                                                    [],
+                                                                },
+                                                                [
+                                                                  {
+                                                                    pc_lhs: {
+                                                                    ppat_desc:
                                                                     Ppat_construct(
                                                                     {
                                                                     txt:
@@ -265,13 +320,14 @@ let createSetLens = (~typeName, ~fields) => {
                                                                     [],
                                                                     }),
                                                                     ),
-                                                                  ppat_loc: loc,
-                                                                  ppat_attributes:
+                                                                    ppat_loc: loc,
+                                                                    ppat_attributes:
                                                                     [],
-                                                                },
-                                                                pc_guard: None,
-                                                                pc_rhs: {
-                                                                  pexp_desc:
+                                                                    },
+                                                                    pc_guard:
+                                                                    None,
+                                                                    pc_rhs: {
+                                                                    pexp_desc:
                                                                     Pexp_sequence(
                                                                     {
                                                                     pexp_desc:
@@ -429,15 +485,14 @@ let createSetLens = (~typeName, ~fields) => {
                                                                     [],
                                                                     },
                                                                     ),
-
-                                                                  pexp_loc: loc,
-                                                                  pexp_attributes:
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
                                                                     [],
-                                                                },
-                                                              },
-                                                              {
-                                                                pc_lhs: {
-                                                                  ppat_desc:
+                                                                    },
+                                                                  },
+                                                                  {
+                                                                    pc_lhs: {
+                                                                    ppat_desc:
                                                                     Ppat_construct(
                                                                     {
                                                                     txt:
@@ -448,13 +503,14 @@ let createSetLens = (~typeName, ~fields) => {
                                                                     },
                                                                     None,
                                                                     ),
-                                                                  ppat_loc: loc,
-                                                                  ppat_attributes:
+                                                                    ppat_loc: loc,
+                                                                    ppat_attributes:
                                                                     [],
-                                                                },
-                                                                pc_guard: None,
-                                                                pc_rhs: {
-                                                                  pexp_desc:
+                                                                    },
+                                                                    pc_guard:
+                                                                    None,
+                                                                    pc_rhs: {
+                                                                    pexp_desc:
                                                                     Pexp_ident({
                                                                     loc,
                                                                     txt:
@@ -462,31 +518,257 @@ let createSetLens = (~typeName, ~fields) => {
                                                                     typeName,
                                                                     ),
                                                                     }),
-                                                                  pexp_loc: loc,
-                                                                  pexp_attributes:
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
                                                                     [],
-                                                                },
-                                                              },
-                                                            ],
-                                                          )
-                                                        | _ =>
-                                                          Pexp_record(
-                                                            [
-                                                              (
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              ),
+                                                          },
+                                                        },
+                                                        {
+                                                          pc_lhs: {
+                                                            ppat_loc: Location.none,
+                                                            ppat_attributes:
+                                                              [],
+                                                            ppat_desc:
+                                                              Ppat_construct(
                                                                 {
                                                                   loc,
                                                                   txt:
+                                                                    Lident(
+                                                                    String.capitalize(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    )
+                                                                    ++ "AtExn",
+                                                                    ),
+                                                                },
+                                                                Some({
+                                                                  ppat_desc:
+                                                                    Ppat_var({
+                                                                    txt: "index",
+                                                                    loc,
+                                                                    }),
+                                                                  ppat_loc: loc,
+                                                                  ppat_attributes:
+                                                                    [],
+                                                                }),
+                                                              ),
+                                                          },
+                                                          pc_guard: None,
+                                                          pc_rhs: {
+                                                            pexp_loc: loc,
+                                                            pexp_attributes:
+                                                              [],
+                                                            pexp_desc:
+                                                              Pexp_sequence(
+                                                                {
+                                                                  pexp_desc:
+                                                                    Pexp_apply(
+                                                                    {
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    txt:
+                                                                    Ldot(
+                                                                    Lident(
+                                                                    "Array",
+                                                                    ),
+                                                                    "set",
+                                                                    ),
+                                                                    loc,
+                                                                    }),
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    },
+                                                                    [
+                                                                    (
+                                                                    Nolabel,
+                                                                    {
+                                                                    pexp_desc:
+                                                                    Pexp_field(
+                                                                    {
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    typeName,
+                                                                    ),
+                                                                    }),
+                                                                    },
+                                                                    {
+                                                                    loc,
+                                                                    txt:
                                                                     Lident(
                                                                     field.
                                                                     pld_name.
                                                                     txt,
                                                                     ),
-                                                                },
-                                                                {
+                                                                    },
+                                                                    ),
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    },
+                                                                    ),
+                                                                    (
+                                                                    Nolabel,
+                                                                    {
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    txt:
+                                                                    Lident(
+                                                                    "index",
+                                                                    ),
+                                                                    loc,
+                                                                    }),
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    },
+                                                                    ),
+                                                                    (
+                                                                    Nolabel,
+                                                                    {
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    txt:
+                                                                    Lident(
+                                                                    "value",
+                                                                    ),
+                                                                    loc,
+                                                                    }),
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    },
+                                                                    ),
+                                                                    ],
+                                                                    ),
                                                                   pexp_loc: loc,
                                                                   pexp_attributes:
                                                                     [],
+                                                                },
+                                                                {
                                                                   pexp_desc:
+                                                                    Pexp_record(
+                                                                    [
+                                                                    (
+                                                                    {
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    ),
+                                                                    },
+                                                                    {
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    pexp_desc:
+                                                                    Pexp_field(
+                                                                    {
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    typeName,
+                                                                    ),
+                                                                    }),
+                                                                    },
+                                                                    {
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    ),
+                                                                    },
+                                                                    ),
+                                                                    },
+                                                                    ),
+                                                                    ],
+                                                                    Some({
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    pexp_desc:
+                                                                    Pexp_ident({
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    typeName,
+                                                                    ),
+                                                                    }),
+                                                                    }),
+                                                                    ),
+                                                                  pexp_loc: loc,
+                                                                  pexp_attributes:
+                                                                    [],
+                                                                },
+                                                              ),
+                                                          },
+                                                        },
+                                                      ]
+                                                    | _ => [
+                                                        {
+                                                          pc_lhs: {
+                                                            ppat_loc: Location.none,
+                                                            ppat_attributes:
+                                                              [],
+                                                            ppat_desc:
+                                                              Ppat_construct(
+                                                                {
+                                                                  loc,
+                                                                  txt:
+                                                                    Lident(
+                                                                    String.capitalize(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    ),
+                                                                    ),
+                                                                },
+                                                                None,
+                                                              ),
+                                                          },
+                                                          pc_guard: None,
+                                                          pc_rhs: {
+                                                            pexp_loc: loc,
+                                                            pexp_attributes:
+                                                              [],
+                                                            pexp_desc:
+                                                              Pexp_record(
+                                                                [
+                                                                  (
+                                                                    {
+                                                                    loc,
+                                                                    txt:
+                                                                    Lident(
+                                                                    field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                    ),
+                                                                    },
+                                                                    {
+                                                                    pexp_loc: loc,
+                                                                    pexp_attributes:
+                                                                    [],
+                                                                    pexp_desc:
                                                                     Pexp_ident({
                                                                     loc,
                                                                     txt:
@@ -494,27 +776,29 @@ let createSetLens = (~typeName, ~fields) => {
                                                                     "value",
                                                                     ),
                                                                     }),
-                                                                },
-                                                              ),
-                                                            ],
-                                                            Some({
-                                                              pexp_loc: loc,
-                                                              pexp_attributes:
-                                                                [],
-                                                              pexp_desc:
-                                                                Pexp_ident({
-                                                                  loc,
-                                                                  txt:
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                                Some({
+                                                                  pexp_loc: loc,
+                                                                  pexp_attributes:
+                                                                    [],
+                                                                  pexp_desc:
+                                                                    Pexp_ident({
+                                                                    loc,
+                                                                    txt:
                                                                     Lident(
                                                                     typeName,
                                                                     ),
+                                                                    }),
                                                                 }),
-                                                            }),
-                                                          )
+                                                              ),
+                                                          },
                                                         },
+                                                      ]
                                                     },
-                                                  },
-                                                fields,
+                                                  fields,
+                                                ),
                                               ),
                                             ),
                                         },
@@ -734,94 +1018,113 @@ let createGetLens = (~typeName, ~fields) => {
                                               loc,
                                             }),
                                         },
-                                        List.map(
-                                          field =>
-                                            {
-                                              pc_lhs: {
-                                                ppat_loc: loc,
-                                                ppat_attributes: [],
-                                                ppat_desc:
-                                                  Ppat_construct(
-                                                    {
-                                                      loc,
-                                                      txt:
-                                                        Lident(
-                                                          String.capitalize(
-                                                            field.pld_name.txt,
-                                                          ),
-                                                        ),
-                                                    },
-                                                    switch (
-                                                      field.pld_type.ptyp_desc
-                                                    ) {
-                                                    | Ptyp_constr(
-                                                        {
-                                                          txt: Lident("array"),
-                                                        },
-                                                        [inner],
-                                                      ) =>
-                                                      Some({
-                                                        ppat_desc:
-                                                          Ppat_var({
-                                                            txt: "index",
-                                                            loc,
-                                                          }),
-                                                        ppat_loc: loc,
-                                                        ppat_attributes: [],
-                                                      })
-                                                    | _ => None
-                                                    },
-                                                  ),
-                                              },
-                                              pc_guard: None,
-                                              pc_rhs: {
-                                                pexp_loc: loc,
-                                                pexp_attributes: [],
-                                                pexp_desc: {
-                                                  let rhs_desc =
-                                                    Pexp_field(
-                                                      {
-                                                        pexp_loc: loc,
-                                                        pexp_attributes: [],
-                                                        pexp_desc:
-                                                          Pexp_ident({
+                                        List.flatten(
+                                          List.map(
+                                            field => {
+                                              let rhs_desc =
+                                                Pexp_field(
+                                                  {
+                                                    pexp_loc: loc,
+                                                    pexp_attributes: [],
+                                                    pexp_desc:
+                                                      Pexp_ident({
+                                                        loc,
+                                                        txt: Lident(typeName),
+                                                      }),
+                                                  },
+                                                  {
+                                                    loc,
+                                                    txt:
+                                                      Lident(
+                                                        field.pld_name.txt,
+                                                      ),
+                                                  },
+                                                );
+
+                                              switch (field.pld_type.ptyp_desc) {
+                                              | Ptyp_constr(
+                                                  {txt: Lident("array")},
+                                                  [inner],
+                                                ) => [
+                                                  {
+                                                    pc_lhs: {
+                                                      ppat_loc: loc,
+                                                      ppat_attributes: [],
+                                                      ppat_desc:
+                                                        Ppat_construct(
+                                                          {
                                                             loc,
                                                             txt:
                                                               Lident(
-                                                                typeName,
-                                                              ),
-                                                          }),
-                                                      },
-                                                      {
-                                                        loc,
-                                                        txt:
-                                                          Lident(
-                                                            field.pld_name.txt,
-                                                          ),
-                                                      },
-                                                    );
-                                                  switch (
-                                                    field.pld_type.ptyp_desc
-                                                  ) {
-                                                  | Ptyp_constr(
-                                                      {txt: Lident("array")},
-                                                      [inner],
-                                                    ) =>
-                                                    Pexp_try(
-                                                      {
-                                                        pexp_desc:
-                                                          Pexp_construct(
-                                                            {
-                                                              txt:
-                                                                Lident(
-                                                                  "Some",
+                                                                String.capitalize(
+                                                                  field.
+                                                                    pld_name.
+                                                                    txt,
                                                                 ),
-                                                              loc,
-                                                            },
-                                                            Some({
-                                                              pexp_desc:
-                                                                Pexp_apply(
-                                                                  {
+                                                              ),
+                                                          },
+                                                          None,
+                                                        ),
+                                                    },
+                                                    pc_guard: None,
+                                                    pc_rhs: {
+                                                      pexp_loc: loc,
+                                                      pexp_attributes: [],
+                                                      pexp_desc: {
+                                                        rhs_desc;
+                                                      },
+                                                    },
+                                                  },
+                                                  {
+                                                    pc_lhs: {
+                                                      ppat_loc: loc,
+                                                      ppat_attributes: [],
+                                                      ppat_desc:
+                                                        Ppat_construct(
+                                                          {
+                                                            loc,
+                                                            txt:
+                                                              Lident(
+                                                                String.capitalize(
+                                                                  field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                )
+                                                                ++ "At",
+                                                              ),
+                                                          },
+                                                          Some({
+                                                            ppat_desc:
+                                                              Ppat_var({
+                                                                txt: "index",
+                                                                loc,
+                                                              }),
+                                                            ppat_loc: loc,
+                                                            ppat_attributes:
+                                                              [],
+                                                          }),
+                                                        ),
+                                                    },
+                                                    pc_guard: None,
+                                                    pc_rhs: {
+                                                      pexp_loc: loc,
+                                                      pexp_attributes: [],
+                                                      pexp_desc: {
+                                                        Pexp_try(
+                                                          {
+                                                            pexp_desc:
+                                                              Pexp_construct(
+                                                                {
+                                                                  txt:
+                                                                    Lident(
+                                                                    "Some",
+                                                                    ),
+                                                                  loc,
+                                                                },
+                                                                Some({
+                                                                  pexp_desc:
+                                                                    Pexp_apply(
+                                                                    {
                                                                     pexp_desc:
                                                                     Pexp_ident({
                                                                     txt:
@@ -836,8 +1139,8 @@ let createGetLens = (~typeName, ~fields) => {
                                                                     pexp_loc: loc,
                                                                     pexp_attributes:
                                                                     [],
-                                                                  },
-                                                                  [
+                                                                    },
+                                                                    [
                                                                     (
                                                                     Nolabel,
                                                                     {
@@ -863,51 +1166,168 @@ let createGetLens = (~typeName, ~fields) => {
                                                                     [],
                                                                     },
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                              pexp_loc: loc,
-                                                              pexp_attributes:
-                                                                [],
-                                                            }),
-                                                          ),
-                                                        pexp_loc: loc,
-                                                        pexp_attributes: [],
-                                                      },
-                                                      [
-                                                        {
-                                                          pc_lhs: {
-                                                            ppat_desc:
-                                                              Ppat_any,
-                                                            ppat_loc: loc,
-                                                            ppat_attributes:
-                                                              [],
-                                                          },
-                                                          pc_guard: None,
-                                                          pc_rhs: {
-                                                            pexp_desc:
-                                                              Pexp_construct(
-                                                                {
-                                                                  txt:
-                                                                    Lident(
-                                                                    "None",
+                                                                    ],
                                                                     ),
-                                                                  loc,
-                                                                },
-                                                                None,
+                                                                  pexp_loc: loc,
+                                                                  pexp_attributes:
+                                                                    [],
+                                                                }),
                                                               ),
                                                             pexp_loc: loc,
                                                             pexp_attributes:
                                                               [],
                                                           },
-                                                        },
-                                                      ],
-                                                    )
-                                                  | _ => rhs_desc
-                                                  };
-                                                },
-                                              },
+                                                          [
+                                                            {
+                                                              pc_lhs: {
+                                                                ppat_desc:
+                                                                  Ppat_any,
+                                                                ppat_loc: loc,
+                                                                ppat_attributes:
+                                                                  [],
+                                                              },
+                                                              pc_guard: None,
+                                                              pc_rhs: {
+                                                                pexp_desc:
+                                                                  Pexp_construct(
+                                                                    {
+                                                                    txt:
+                                                                    Lident(
+                                                                    "None",
+                                                                    ),
+                                                                    loc,
+                                                                    },
+                                                                    None,
+                                                                  ),
+                                                                pexp_loc: loc,
+                                                                pexp_attributes:
+                                                                  [],
+                                                              },
+                                                            },
+                                                          ],
+                                                        );
+                                                      },
+                                                    },
+                                                  },
+                                                  {
+                                                    pc_lhs: {
+                                                      ppat_loc: loc,
+                                                      ppat_attributes: [],
+                                                      ppat_desc:
+                                                        Ppat_construct(
+                                                          {
+                                                            loc,
+                                                            txt:
+                                                              Lident(
+                                                                String.capitalize(
+                                                                  field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                )
+                                                                ++ "AtExn",
+                                                              ),
+                                                          },
+                                                          Some({
+                                                            ppat_desc:
+                                                              Ppat_var({
+                                                                txt: "index",
+                                                                loc,
+                                                              }),
+                                                            ppat_loc: loc,
+                                                            ppat_attributes:
+                                                              [],
+                                                          }),
+                                                        ),
+                                                    },
+                                                    pc_guard: None,
+                                                    pc_rhs: {
+                                                      pexp_loc: loc,
+                                                      pexp_attributes: [],
+                                                      pexp_desc: {
+                                                        Pexp_apply(
+                                                          {
+                                                            pexp_desc:
+                                                              Pexp_ident({
+                                                                txt:
+                                                                  Ldot(
+                                                                    Lident(
+                                                                    "Array",
+                                                                    ),
+                                                                    "get",
+                                                                  ),
+                                                                loc,
+                                                              }),
+                                                            pexp_loc: loc,
+                                                            pexp_attributes:
+                                                              [],
+                                                          },
+                                                          [
+                                                            (
+                                                              Nolabel,
+                                                              {
+                                                                pexp_desc: rhs_desc,
+                                                                pexp_loc: loc,
+                                                                pexp_attributes:
+                                                                  [],
+                                                              },
+                                                            ),
+                                                            (
+                                                              Nolabel,
+                                                              {
+                                                                pexp_desc:
+                                                                  Pexp_ident({
+                                                                    txt:
+                                                                    Lident(
+                                                                    "index",
+                                                                    ),
+                                                                    loc,
+                                                                  }),
+                                                                pexp_loc: loc,
+                                                                pexp_attributes:
+                                                                  [],
+                                                              },
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    },
+                                                  },
+                                                ]
+                                              | _ => [
+                                                  {
+                                                    pc_lhs: {
+                                                      ppat_loc: loc,
+                                                      ppat_attributes: [],
+                                                      ppat_desc:
+                                                        Ppat_construct(
+                                                          {
+                                                            loc,
+                                                            txt:
+                                                              Lident(
+                                                                String.capitalize(
+                                                                  field.
+                                                                    pld_name.
+                                                                    txt,
+                                                                ),
+                                                              ),
+                                                          },
+                                                          None,
+                                                        ),
+                                                    },
+                                                    pc_guard: None,
+                                                    pc_rhs: {
+                                                      pexp_loc: loc,
+                                                      pexp_attributes: [],
+                                                      pexp_desc: {
+                                                        rhs_desc;
+                                                      },
+                                                    },
+                                                  },
+                                                ]
+                                              };
                                             },
-                                          fields,
+                                            fields,
+                                          ),
                                         ),
                                       ),
                                   },
@@ -1003,64 +1423,162 @@ let createGadt = (~fields) => {
           ptype_cstrs: [],
           ptype_kind:
             Ptype_variant(
-              List.map(
-                field =>
-                  {
-                    pcd_loc: Location.none,
-                    pcd_attributes: [],
-                    pcd_name: {
-                      txt: String.capitalize(field.pld_name.txt),
-                      loc: Location.none,
-                    },
-                    pcd_args:
-                      Pcstr_tuple(
-                        switch (field.pld_type.ptyp_desc) {
-                        | Ptyp_constr({txt: Lident("array")}, _) => [
-                            {
-                              ptyp_desc:
-                                Ptyp_constr(
-                                  {loc: Location.none, txt: Lident("int")},
-                                  [],
-                                ),
+              List.flatten(
+                List.map(
+                  field =>
+                    switch (field.pld_type.ptyp_desc) {
+                    | Ptyp_constr({txt: Lident("array")}, [inner]) => [
+                        {
+                          pcd_loc: Location.none,
+                          pcd_attributes: [],
+                          pcd_name: {
+                            txt: String.capitalize(field.pld_name.txt),
+                            loc: Location.none,
+                          },
+                          pcd_args: Pcstr_tuple([]),
+                          pcd_res:
+                            Some({
                               ptyp_loc: Location.none,
                               ptyp_attributes: [],
-                            },
-                          ]
-                        | _ => []
+                              ptyp_desc:
+                                Ptyp_constr(
+                                  {
+                                    txt: Lident(gadtFieldName),
+                                    loc: Location.none,
+                                  },
+                                  [
+                                    {
+                                      ptyp_desc: field.pld_type.ptyp_desc,
+                                      ptyp_loc: Location.none,
+                                      ptyp_attributes: [],
+                                    },
+                                  ],
+                                ),
+                            }),
                         },
-                      ),
-                    pcd_res:
-                      Some({
-                        ptyp_loc: Location.none,
-                        ptyp_attributes: [],
-                        ptyp_desc:
-                          Ptyp_constr(
-                            {txt: Lident(gadtFieldName), loc: Location.none},
-                            [
+                        {
+                          pcd_loc: Location.none,
+                          pcd_attributes: [],
+                          pcd_name: {
+                            txt:
+                              String.capitalize(field.pld_name.txt ++ "At"),
+                            loc: Location.none,
+                          },
+                          pcd_args:
+                            Pcstr_tuple([
                               {
                                 ptyp_desc:
-                                  switch (field.pld_type.ptyp_desc) {
-                                  | Ptyp_constr(
-                                      {txt: Lident("array")},
-                                      [inner],
-                                    ) =>
-                                    Ptyp_constr(
-                                      {
-                                        loc: Location.none,
-                                        txt: Lident("option"),
-                                      },
-                                      [inner],
-                                    )
-                                  | _ => field.pld_type.ptyp_desc
-                                  },
+                                  Ptyp_constr(
+                                    {loc: Location.none, txt: Lident("int")},
+                                    [],
+                                  ),
                                 ptyp_loc: Location.none,
                                 ptyp_attributes: [],
                               },
-                            ],
-                          ),
-                      }),
-                  },
-                fields,
+                            ]),
+                          pcd_res:
+                            Some({
+                              ptyp_loc: Location.none,
+                              ptyp_attributes: [],
+                              ptyp_desc:
+                                Ptyp_constr(
+                                  {
+                                    txt: Lident(gadtFieldName),
+                                    loc: Location.none,
+                                  },
+                                  [
+                                    {
+                                      ptyp_desc:
+                                        Ptyp_constr(
+                                          {
+                                            loc: Location.none,
+                                            txt: Lident("option"),
+                                          },
+                                          [inner],
+                                        ),
+                                      ptyp_loc: Location.none,
+                                      ptyp_attributes: [],
+                                    },
+                                  ],
+                                ),
+                            }),
+                        },
+                        {
+                          pcd_loc: Location.none,
+                          pcd_attributes: [],
+                          pcd_name: {
+                            txt:
+                              String.capitalize(
+                                field.pld_name.txt ++ "AtExn",
+                              ),
+                            loc: Location.none,
+                          },
+                          pcd_args:
+                            Pcstr_tuple([
+                              {
+                                ptyp_desc:
+                                  Ptyp_constr(
+                                    {loc: Location.none, txt: Lident("int")},
+                                    [],
+                                  ),
+                                ptyp_loc: Location.none,
+                                ptyp_attributes: [],
+                              },
+                            ]),
+                          pcd_res:
+                            Some({
+                              ptyp_loc: Location.none,
+                              ptyp_attributes: [],
+                              ptyp_desc:
+                                Ptyp_constr(
+                                  {
+                                    txt: Lident(gadtFieldName),
+                                    loc: Location.none,
+                                  },
+                                  [
+                                    {
+                                      ptyp_desc: inner.ptyp_desc,
+                                      ptyp_loc: Location.none,
+                                      ptyp_attributes: [],
+                                    },
+                                  ],
+                                ),
+                            }),
+                        },
+                      ]
+                    | _ => [
+                        {
+                          pcd_loc: Location.none,
+                          pcd_attributes: [],
+                          pcd_name: {
+                            txt: String.capitalize(field.pld_name.txt),
+                            loc: Location.none,
+                          },
+                          pcd_args: Pcstr_tuple([]),
+                          pcd_res:
+                            Some({
+                              ptyp_loc: Location.none,
+                              ptyp_attributes: [],
+                              ptyp_desc:
+                                Ptyp_constr(
+                                  {
+                                    txt: Lident(gadtFieldName),
+                                    loc: Location.none,
+                                  },
+                                  [
+                                    {
+                                      ptyp_desc: field.pld_type.ptyp_desc,
+                                      ptyp_loc: Location.none,
+                                      ptyp_attributes: [],
+                                    },
+                                  ],
+                                ),
+                            }),
+                        },
+                      ]
+                    },
+                  fields,
+                ),
               ),
             ),
           ptype_private: Public,

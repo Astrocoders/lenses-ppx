@@ -15,4 +15,4 @@ let state = {
 
 Js.log(state->get(Email));
 Js.log(state->get(Age));
-Js.log(state->get(Hobbies(1)));
+Js.log(state->get(HobbiesAt(1)));
