@@ -1,24 +1,35 @@
-module FormConfig =
+module User =
   struct
+    type t = {
+      email: string;
+      age: int;
+      hobbies: string array;}
     type _ field =
       | Email: string field
       | Age: int field
-    type state = {
-      email: string;
-      age: int;}
-    let get : 'value . state -> 'value field -> 'value= fun (type value) ->
-      (fun state  ->
+      | Hobbies: int -> string option field
+    let get : 'value . t -> 'value field -> 'value= fun (type value) ->
+      (fun t  ->
          fun field  ->
-           match field with | Email  -> state.email | Age  -> state.age : 
-      state -> value field -> value)
-    let set : 'value . state -> 'value field -> 'value -> state= fun (type
-      value) ->
-      (fun state  ->
+           match field with
+           | Email  -> t.email
+           | Age  -> t.age
+           | Hobbies index ->
+               (try Some ((t.hobbies).(index)) with | _ -> None) : t ->
+                                                                    value
+                                                                    field ->
+                                                                    value)
+    let set : 'value . t -> 'value field -> 'value -> t= fun (type value) ->
+      (fun t  ->
          fun field  ->
            fun value  ->
              match field with
-             | Email  -> { state with email = value }
-             | Age  -> { state with age = value } : state ->
-                                                      value field ->
-                                                        value -> state)
-  end
+             | Email  -> { t with email = value }
+             | Age  -> { t with age = value }
+             | Hobbies index ->
+                 (match value with
+                  | Some value ->
+                      ((t.hobbies).(index) <- value;
+                       { t with hobbies = (t.hobbies) })
+                  | None  -> hobbies) : t -> value field -> value -> t)
+end
