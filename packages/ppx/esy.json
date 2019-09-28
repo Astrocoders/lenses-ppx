@@ -32,7 +32,6 @@
     "@opam/re": "1.8.0"
   },
   "devDependencies": {
-    "@opam/merlin": "*",
-    "@opam/ppx_tools": "*"
+    "@opam/merlin": "*"
   }
 }
