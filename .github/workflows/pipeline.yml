@@ -6,66 +6,76 @@ on:
       - master
 
 jobs:
-
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         node_version: [10]
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
-    - uses: actions/checkout@master
-    - name: Use Node.js ${{ matrix.node_version }}
-      uses: actions/setup-node@v1
-      with:
-        version: ${{ matrix.node_version }}
-    - name: esy install and build
-      run: |
-        export OS=$(uname | tr '[A-Z]' '[a-z]')
-        npm i -g esy
-        cd $GITHUB_WORKSPACE/packages/ppx && esy install
-        cd $GITHUB_WORKSPACE/packages/ppx && esy build
-    - name: Save artifacts
-      uses: actions/upload-artifact@master
-      with: 
-        name: ${{ matrix.os }}
-        path: packages/ppx/_build/default/bin/bin.exe
+      - uses: actions/checkout@master
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v1
+        with:
+          version: ${{ matrix.node_version }}
+      - name: install esy
+        run: npm i -g esy
+      - name: esy install
+        run: |
+          cd packages
+          cd ppx
+          esy install
+      - name: esy build
+        run: |
+          cd packages
+          cd ppx
+          esy build
+      - name: Save artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.os }}
+          path: packages/ppx/_build/default/bin/bin.exe
 
   release:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/download-artifact@master
-      with:
-        name: ubuntu-latest
-        path: packages/linux
-    - uses: actions/download-artifact@master
-      with:
-        name: macOS-latest
-        path: packages/darwin
-    - name: Use Node.js 10
-      uses: actions/npm@master
-      with:
-        version: 10
-      env:
-        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-    - name: Publish
-      run: |
-        export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-        mkdir -p $GITHUB_WORKSPACE/lenses-ppx
-        mv $GITHUB_WORKSPACE/packages/darwin/bin.exe $GITHUB_WORKSPACE/lenses-ppx/darwin
-        mv $GITHUB_WORKSPACE/packages/linux/bin.exe $GITHUB_WORKSPACE/lenses-ppx/linux
-        POSTINSTALL="\"if test -f \$(uname | tr '[A-Z]' '[a-z]'); then mv \$(uname | tr '[A-Z]' '[a-z]') ./ppx; chmod +x ./ppx; fi\""
-        echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"scripts\": { \"postinstall\": $POSTINSTALL } }" > $GITHUB_WORKSPACE/lenses-ppx/package.json
-        echo "//registry.npmjs.org/:_authToken:${NPM_AUTH_TOKEN}" > $HOME/.npmrc
-        # cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
-        cd $GITHUB_WORKSPACE/lenses-ppx/ && npm pack
-        mv $GITHUB_WORKSPACE/lenses-ppx/lenses-ppx-$PACKAGE_VERSION.tgz $GITHUB_WORKSPACE/lenses-ppx/package.tgz
-        
-    - name: Save artifacts
-      uses: actions/upload-artifact@master
-      with: 
-        name: package
-        path: lenses-ppx/package.tgz 
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@master
+        with:
+          name: ubuntu-latest
+          path: packages/linux
+      - uses: actions/download-artifact@master
+        with:
+          name: macOS-latest
+          path: packages/darwin
+      - uses: actions/download-artifact@master
+        with:
+          name: windows-latest
+          path: packages/windows
+      - name: Use Node.js 10
+        uses: actions/npm@master
+        with:
+          version: 10
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Publish
+        run: |
+          export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+          mkdir -p $GITHUB_WORKSPACE/lenses-ppx
+          mv $GITHUB_WORKSPACE/packages/darwin/bin.exe $GITHUB_WORKSPACE/lenses-ppx/darwin
+          mv $GITHUB_WORKSPACE/packages/linux/bin.exe $GITHUB_WORKSPACE/lenses-ppx/linux
+          mv $GITHUB_WORKSPACE/packages/windows/bin.exe $GITHUB_WORKSPACE/lenses-ppx/windows
+          mv $GITHUB_WORKSPACE/packages/ppx/postinstall.js $GITHUB_WORKSPACE/lenses-ppx/postinstall.js
+          POSTINSTALL="node ./postinstall.js"
+          echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"scripts\": { \"postinstall\": \"$POSTINSTALL\" } }" > $GITHUB_WORKSPACE/lenses-ppx/package.json
+          echo "//registry.npmjs.org/:_authToken:${NPM_AUTH_TOKEN}" > $HOME/.npmrc
+          # cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
+          cd $GITHUB_WORKSPACE/lenses-ppx/ && npm pack
+          mv $GITHUB_WORKSPACE/lenses-ppx/lenses-ppx-$PACKAGE_VERSION.tgz $GITHUB_WORKSPACE/lenses-ppx/package.tgz
 
+      - name: Save artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: package
+          path: lenses-ppx/package.tgz

@@ -13,9 +13,7 @@
     "build": "dune build -p #{self.name}",
     "buildsInSource": "_build",
     "release": {
-      "releasedBinaries": [
-        "bin.exe"
-      ]
+      "releasedBinaries": ["bin.exe"]
     }
   },
   "dependencies": {
@@ -23,6 +21,8 @@
     "@esy-ocaml/reason": "*",
     "@opam/dune": ">=1.6.0",
     "@opam/ocaml-migrate-parsetree": "1.2.0",
+    "@opam/menhir": "20171013",
+    "@opam/merlin": "*",
     "ocaml": "~4.2.3",
     "refmterr": "*"
   },
@@ -30,8 +30,5 @@
     "@esy-ocaml/esy-installer": "0.0.1",
     "@opam/menhir": "20171013",
     "@opam/re": "1.8.0"
-  },
-  "devDependencies": {
-    "@opam/merlin": "*"
   }
 }
