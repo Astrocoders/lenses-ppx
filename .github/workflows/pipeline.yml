@@ -65,7 +65,7 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/lenses-ppx
           mv $GITHUB_WORKSPACE/packages/darwin/bin.exe $GITHUB_WORKSPACE/lenses-ppx/darwin
           mv $GITHUB_WORKSPACE/packages/linux/bin.exe $GITHUB_WORKSPACE/lenses-ppx/linux
-          mv $GITHUB_WORKSPACE/packages/windows/bin.exe $GITHUB_WORKSPACE/lenses-ppx/windows
+          mv $GITHUB_WORKSPACE/packages/windows/bin.exe $GITHUB_WORKSPACE/lenses-ppx/win32
           mv $GITHUB_WORKSPACE/packages/ppx/postinstall.js $GITHUB_WORKSPACE/lenses-ppx/postinstall.js
           POSTINSTALL="node ./postinstall.js"
           echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"scripts\": { \"postinstall\": \"$POSTINSTALL\" } }" > $GITHUB_WORKSPACE/lenses-ppx/package.json
