@@ -176,7 +176,7 @@ let createSetLens = (~typeName, ~fields) => {
                                                             loc,
                                                             txt:
                                                               Lident(
-                                                                String.capitalize(
+                                                                String.capitalize_ascii(
                                                                   field.
                                                                     pld_name.
                                                                     txt,
@@ -466,7 +466,7 @@ let createGetLens = (~typeName, ~fields) => {
                                                       loc,
                                                       txt:
                                                         Lident(
-                                                          String.capitalize(
+                                                          String.capitalize_ascii(
                                                             field.pld_name.txt,
                                                           ),
                                                         ),
@@ -602,7 +602,7 @@ let createGadt = (~fields) => {
                     pcd_loc: Location.none,
                     pcd_attributes: [],
                     pcd_name: {
-                      txt: String.capitalize(field.pld_name.txt),
+                      txt: String.capitalize_ascii(field.pld_name.txt),
                       loc: Location.none,
                     },
                     pcd_args: Pcstr_tuple([]),

@@ -23,7 +23,7 @@
     "@opam/ocaml-migrate-parsetree": "1.2.0",
     "@opam/menhir": "20171013",
     "@opam/merlin": "*",
-    "ocaml": "~4.2.3",
+    "ocaml": "~4.6.1",
     "refmterr": "*"
   },
   "resolutions": {
