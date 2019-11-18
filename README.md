@@ -1,9 +1,18 @@
 # Install
 Install the last stable version
+
+For BuckleScript < 6
 ```
 npm install --save-dev lenses-ppx@4.0.0
 or
 yarn add lenses-ppx@4.0.0 -D
+```
+
+For BuckleScript >= 6
+```
+npm install --save-dev lenses-ppx@5.0.0
+or
+yarn add lenses-ppx@5.0.0 -D
 ```
 
 # Build
