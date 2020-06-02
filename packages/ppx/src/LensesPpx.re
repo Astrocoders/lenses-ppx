@@ -105,7 +105,7 @@ let createSetLens = (~typeName, ~fields) => {
             pexp_attributes: [],
             pexp_desc:
               Pexp_newtype(
-                { txt: "value", loc },
+                {txt: "value", loc},
                 {
                   pexp_loc: loc,
                   pexp_attributes: [],
@@ -408,7 +408,7 @@ let createGetLens = (~typeName, ~fields) => {
             pexp_attributes: [],
             pexp_desc:
               Pexp_newtype(
-                { txt: "value", loc },
+                {txt: "value", loc},
                 {
                   pexp_loc: loc,
                   pexp_attributes: [],
@@ -571,66 +571,36 @@ let createGetLens = (~typeName, ~fields) => {
 };
 
 let createGadt = (~fields) => {
-  pstr_loc: Location.none,
-  pstr_desc:
-    Pstr_type(
-      Recursive,
-      [
-        {
-          ptype_loc: Location.none,
-          ptype_attributes: [],
-          ptype_name: {
-            txt: gadtFieldName,
-            loc: Location.none,
-          },
-          ptype_params: [
-            (
-              {
-                ptyp_desc: Ptyp_any,
-                ptyp_loc: Location.none,
-                ptyp_attributes: [],
-              },
-              Invariant,
+  Str.type_(
+    Recursive,
+    [
+      Type.mk(
+        ~params=[(Typ.any(), Invariant)],
+        ~kind=
+          Ptype_variant(
+            List.map(
+              field =>
+                Type.constructor(
+                  ~res=
+                    Typ.constr(
+                      {txt: Lident(gadtFieldName), loc: Location.none},
+                      [
+                        {
+                          ptyp_desc: field.pld_type.ptyp_desc,
+                          ptyp_loc: Location.none,
+                          ptyp_attributes: [],
+                        },
+                      ],
+                    ),
+                  {txt: field.pld_name.txt, loc},
+                ),
+              fields,
             ),
-          ],
-          ptype_cstrs: [],
-          ptype_kind:
-            Ptype_variant(
-              List.map(
-                field =>
-                  {
-                    pcd_loc: Location.none,
-                    pcd_attributes: [],
-                    pcd_name: {
-                      txt: String.capitalize_ascii(field.pld_name.txt),
-                      loc: Location.none,
-                    },
-                    pcd_args: Pcstr_tuple([]),
-                    pcd_res:
-                      Some({
-                        ptyp_loc: Location.none,
-                        ptyp_attributes: [],
-                        ptyp_desc:
-                          Ptyp_constr(
-                            {txt: Lident(gadtFieldName), loc: Location.none},
-                            [
-                              {
-                                ptyp_desc: field.pld_type.ptyp_desc,
-                                ptyp_loc: Location.none,
-                                ptyp_attributes: [],
-                              },
-                            ],
-                          ),
-                      }),
-                  },
-                fields,
-              ),
-            ),
-          ptype_private: Public,
-          ptype_manifest: None,
-        },
-      ],
-    ),
+          ),
+        {txt: gadtFieldName, loc},
+      ),
+    ],
+  );
 };
 
 let createModule = (~typeDef, ~typeName, ~fields) =>
