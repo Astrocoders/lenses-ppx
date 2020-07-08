@@ -2,5 +2,5 @@
   (name LensesPpx)
   (public_name lenses-ppx.lib)
   (libraries reason ocaml-migrate-parsetree)
-  (preprocess (pps ppx_tools_versioned.metaquot_406))
-  (kind ppx_rewriter))
+  (kind ppx_rewriter)
+)

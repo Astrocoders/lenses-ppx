@@ -17,18 +17,18 @@
     }
   },
   "dependencies": {
+    "@esy-ocaml/esy-installer": "^0.0.1",
     "@esy-ocaml/reason": "*",
-    "@opam/dune": ">=2",
-    "@opam/ocaml-migrate-parsetree": "*",
-    "@opam/ppx_tools_versioned": "*",
-    "@opam/metaquot": "*",
-    "ocaml": "4.9.0",
+    "@opam/dune": ">=1.6.0",
+    "@opam/ocaml-migrate-parsetree": "1.2.0",
+    "@opam/menhir": "20171013",
+    "@opam/merlin": "*",
+    "ocaml": "~4.6.1",
     "refmterr": "*"
   },
-  "devDependencies": {
-    "@opam/merlin": "*"
-  },
   "resolutions": {
+    "@esy-ocaml/esy-installer": "0.0.1",
+    "@opam/menhir": "20171013",
     "@opam/re": "1.8.0"
   }
 }
