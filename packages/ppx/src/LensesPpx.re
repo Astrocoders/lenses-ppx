@@ -1,6 +1,5 @@
 open Migrate_parsetree;
-open OCaml_406.Ast;
-
+open Ast_410;
 open Ast_mapper;
 open Asttypes;
 open Parsetree;
@@ -8,567 +7,114 @@ open Ast_helper;
 
 let gadtFieldName = "field";
 let loc = Location.none;
-
 let createSetLens = (~typeName, ~fields) => {
-  pstr_loc: Location.none,
-  pstr_desc:
-    Pstr_value(
-      Nonrecursive,
-      [
-        {
-          pvb_loc: loc,
-          pvb_attributes: [],
-          pvb_pat: {
-            ppat_loc: Location.none,
-            ppat_attributes: [],
-            ppat_desc:
-              Ppat_constraint(
-                {
-                  ppat_desc: Ppat_var({txt: "set", loc}),
-                  ppat_loc: Location.none,
-                  ppat_attributes: [],
-                },
-                {
-                  ptyp_loc: Location.none,
-                  ptyp_attributes: [],
-                  ptyp_desc:
-                    Ptyp_poly(
-                      [{txt: "value", loc}],
-                      {
-                        ptyp_loc: Location.none,
-                        ptyp_attributes: [],
-                        ptyp_desc:
-                          Ptyp_arrow(
-                            Nolabel,
-                            {
-                              ptyp_desc:
-                                Ptyp_constr(
-                                  {txt: Lident(typeName), loc},
-                                  [],
-                                ),
-                              ptyp_loc: Location.none,
-                              ptyp_attributes: [],
-                            },
-                            {
-                              ptyp_loc: Location.none,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_arrow(
-                                  Nolabel,
-                                  {
-                                    ptyp_loc: Location.none,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_constr(
-                                        {txt: Lident(gadtFieldName), loc},
-                                        [
-                                          {
-                                            ptyp_desc: Ptyp_var("value"),
-                                            ptyp_loc: Location.none,
-                                            ptyp_attributes: [],
-                                          },
-                                        ],
-                                      ),
-                                  },
-                                  {
-                                    ptyp_loc: Location.none,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_arrow(
-                                        Nolabel,
-                                        {
-                                          ptyp_desc: Ptyp_var("value"),
-                                          ptyp_loc: Location.none,
-                                          ptyp_attributes: [],
-                                        },
-                                        {
-                                          ptyp_loc: Location.none,
-                                          ptyp_attributes: [],
-                                          ptyp_desc:
-                                            Ptyp_constr(
-                                              {txt: Lident(typeName), loc},
-                                              [],
-                                            ),
-                                        },
-                                      ),
-                                  },
-                                ),
-                            },
-                          ),
-                      },
-                    ),
-                },
-              ),
-          },
-          pvb_expr: {
-            pexp_loc: loc,
-            pexp_attributes: [],
-            pexp_desc:
-              Pexp_newtype(
-                { txt: "value", loc },
-                {
-                  pexp_loc: loc,
-                  pexp_attributes: [],
-                  pexp_desc:
-                    Pexp_constraint(
-                      {
-                        pexp_loc: loc,
-                        pexp_attributes: [],
-                        pexp_desc:
-                          Pexp_fun(
-                            Nolabel,
-                            None,
-                            {
-                              ppat_desc: Ppat_var({txt: typeName, loc}),
-                              ppat_loc: Location.none,
-                              ppat_attributes: [],
-                            },
-                            {
-                              pexp_loc: loc,
-                              pexp_attributes: [],
-                              pexp_desc:
-                                Pexp_fun(
-                                  Nolabel,
-                                  None,
-                                  {
-                                    ppat_loc: Location.none,
-                                    ppat_attributes: [],
-                                    ppat_desc:
-                                      Ppat_var({txt: gadtFieldName, loc}),
-                                  },
-                                  {
-                                    pexp_loc: loc,
-                                    pexp_attributes: [],
-                                    pexp_desc:
-                                      Pexp_fun(
-                                        Nolabel,
-                                        None,
-                                        {
-                                          ppat_loc: Location.none,
-                                          ppat_attributes: [],
-                                          ppat_desc:
-                                            Ppat_var({txt: "value", loc}),
-                                        },
-                                        {
-                                          pexp_loc: loc,
-                                          pexp_attributes: [],
-                                          pexp_desc:
-                                            Pexp_match(
-                                              {
-                                                pexp_loc: loc,
-                                                pexp_attributes: [],
-                                                pexp_desc:
-                                                  Pexp_ident({
-                                                    txt:
-                                                      Lident(gadtFieldName),
-                                                    loc,
-                                                  }),
-                                              },
-                                              List.map(
-                                                field =>
-                                                  {
-                                                    pc_lhs: {
-                                                      ppat_loc: Location.none,
-                                                      ppat_attributes: [],
-                                                      ppat_desc:
-                                                        Ppat_construct(
-                                                          {
-                                                            loc,
-                                                            txt:
-                                                              Lident(
-                                                                String.capitalize_ascii(
-                                                                  field.
-                                                                    pld_name.
-                                                                    txt,
-                                                                ),
-                                                              ),
-                                                          },
-                                                          None,
-                                                        ),
-                                                    },
-                                                    pc_guard: None,
-                                                    pc_rhs: {
-                                                      pexp_loc: loc,
-                                                      pexp_attributes: [],
-                                                      pexp_desc:
-                                                        Pexp_record(
-                                                          [
-                                                            (
-                                                              {
-                                                                loc,
-                                                                txt:
-                                                                  Lident(
-                                                                    field.
-                                                                    pld_name.
-                                                                    txt,
-                                                                  ),
-                                                              },
-                                                              {
-                                                                pexp_loc: loc,
-                                                                pexp_attributes:
-                                                                  [],
-                                                                pexp_desc:
-                                                                  Pexp_ident({
-                                                                    loc,
-                                                                    txt:
-                                                                    Lident(
-                                                                    "value",
-                                                                    ),
-                                                                  }),
-                                                              },
-                                                            ),
-                                                          ],
-                                                          Some({
-                                                            pexp_loc: loc,
-                                                            pexp_attributes:
-                                                              [],
-                                                            pexp_desc:
-                                                              Pexp_ident({
-                                                                loc,
-                                                                txt:
-                                                                  Lident(
-                                                                    typeName,
-                                                                  ),
-                                                              }),
-                                                          }),
-                                                        ),
-                                                    },
-                                                  },
-                                                fields,
-                                              ),
-                                            ),
-                                        },
-                                      ),
-                                  },
-                                ),
-                            },
-                          ),
-                      },
-                      {
-                        ptyp_loc: loc,
-                        ptyp_attributes: [],
-                        ptyp_desc:
-                          Ptyp_arrow(
-                            Nolabel,
-                            {
-                              ptyp_loc: loc,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_constr(
-                                  {txt: Lident(typeName), loc},
-                                  [],
-                                ),
-                            },
-                            {
-                              ptyp_loc: loc,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_arrow(
-                                  Nolabel,
-                                  {
-                                    ptyp_loc: loc,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_constr(
-                                        {txt: Lident(gadtFieldName), loc},
-                                        [
-                                          {
-                                            ptyp_loc: loc,
-                                            ptyp_attributes: [],
-                                            ptyp_desc:
-                                              Ptyp_constr(
-                                                {txt: Lident("value"), loc},
-                                                [],
-                                              ),
-                                          },
-                                        ],
-                                      ),
-                                  },
-                                  {
-                                    ptyp_loc: loc,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_arrow(
-                                        Nolabel,
-                                        {
-                                          ptyp_loc: loc,
-                                          ptyp_attributes: [],
-                                          ptyp_desc:
-                                            Ptyp_constr(
-                                              {txt: Lident("value"), loc},
-                                              [],
-                                            ),
-                                        },
-                                        {
-                                          ptyp_loc: loc,
-                                          ptyp_attributes: [],
-                                          ptyp_desc:
-                                            Ptyp_constr(
-                                              {txt: Lident(typeName), loc},
-                                              [],
-                                            ),
-                                        },
-                                      ),
-                                  },
-                                ),
-                            },
-                          ),
-                      },
-                    ),
-                },
-              ),
-          },
-        },
-      ],
-    ),
+  let cases =
+    List.map(
+      field => {
+        Ast_helper.Exp.case(
+          Ast_helper.Pat.construct(
+            {
+              loc,
+              txt: Lident(String.capitalize_ascii(field.pld_name.txt)),
+            },
+            None,
+          ),
+          Ast_helper.Exp.record(
+            [({loc, txt: Lident(field.pld_name.txt)}, [%expr value])],
+            // Spread not needed when there is only one field in the type.
+            // So we avoid the "redundant with" warning
+            List.length(fields) > 1 ? Some([%expr values]) : None,
+          ),
+        )
+      },
+      fields,
+    );
+
+  let recordType =
+    Ast_helper.Typ.mk(Ptyp_constr({txt: Lident(typeName), loc}, []));
+
+  let typeDefinition =
+    Ast_helper.Typ.poly(
+      [{txt: "value", loc}],
+      [%type: ([%t recordType], field('value), 'value) => [%t recordType]],
+    )
+    |> Ast_helper.Typ.force_poly;
+
+  let typeDefinitionFilledWithPolyLocalType = [%type:
+    ([%t recordType], field(value), value) => [%t recordType]
+  ];
+
+  let patMatch =
+    Ast_helper.Exp.mk(
+      Pexp_match(
+        Ast_helper.Exp.mk(Pexp_ident({txt: Lident(gadtFieldName), loc})),
+        cases,
+      ),
+    );
+
+  // Properly applying type constraints for the poly local abstract type
+  // https://caml.inria.fr/pub/docs/manual-ocaml/locallyabstract.html#p:polymorpic-locally-abstract
+  let body = [%expr (values, field, value) => [%e patMatch]];
+  let pat = Ast_helper.Pat.constraint_([%pat? set], typeDefinition);
+  let body =
+    Ast_helper.Exp.constraint_(body, typeDefinitionFilledWithPolyLocalType);
+
+  [%stri let [%p pat] = (type value) => [%e body]];
 };
 
 let createGetLens = (~typeName, ~fields) => {
-  pstr_loc: Location.none,
-  pstr_desc:
-    Pstr_value(
-      Nonrecursive,
-      [
-        {
-          pvb_loc: loc,
-          pvb_attributes: [],
-          pvb_pat: {
-            ppat_loc: Location.none,
-            ppat_attributes: [],
-            ppat_desc:
-              Ppat_constraint(
-                {
-                  ppat_desc: Ppat_var({txt: "get", loc: Location.none}),
-                  ppat_loc: Location.none,
-                  ppat_attributes: [],
-                },
-                {
-                  ptyp_loc: Location.none,
-                  ptyp_attributes: [],
-                  ptyp_desc:
-                    Ptyp_poly(
-                      [{txt: "value", loc}],
-                      {
-                        ptyp_loc: Location.none,
-                        ptyp_attributes: [],
-                        ptyp_desc:
-                          Ptyp_arrow(
-                            Nolabel,
-                            {
-                              ptyp_loc: Location.none,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_constr(
-                                  {
-                                    txt: Lident(typeName),
-                                    loc: Location.none,
-                                  },
-                                  [],
-                                ),
-                            },
-                            {
-                              ptyp_loc: Location.none,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_arrow(
-                                  Nolabel,
-                                  {
-                                    ptyp_loc: Location.none,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_constr(
-                                        {
-                                          txt: Lident(gadtFieldName),
-                                          loc: Location.none,
-                                        },
-                                        [
-                                          {
-                                            ptyp_desc: Ptyp_var("value"),
-                                            ptyp_loc: Location.none,
-                                            ptyp_attributes: [],
-                                          },
-                                        ],
-                                      ),
-                                  },
-                                  {
-                                    ptyp_desc: Ptyp_var("value"),
-                                    ptyp_loc: Location.none,
-                                    ptyp_attributes: [],
-                                  },
-                                ),
-                            },
-                          ),
-                      },
-                    ),
-                },
-              ),
-          },
-          pvb_expr: {
-            pexp_loc: loc,
-            pexp_attributes: [],
-            pexp_desc:
-              Pexp_newtype(
-                { txt: "value", loc },
-                {
-                  pexp_loc: loc,
-                  pexp_attributes: [],
-                  pexp_desc:
-                    Pexp_constraint(
-                      {
-                        pexp_loc: loc,
-                        pexp_attributes: [],
-                        pexp_desc:
-                          Pexp_fun(
-                            Nolabel,
-                            None,
-                            {
-                              ppat_desc:
-                                Ppat_var({txt: typeName, loc: Location.none}),
-                              ppat_loc: Location.none,
-                              ppat_attributes: [],
-                            },
-                            {
-                              pexp_loc: loc,
-                              pexp_attributes: [],
-                              pexp_desc:
-                                Pexp_fun(
-                                  Nolabel,
-                                  None,
-                                  {
-                                    ppat_desc:
-                                      Ppat_var({txt: gadtFieldName, loc}),
-                                    ppat_loc: loc,
-                                    ppat_attributes: [],
-                                  },
-                                  {
-                                    pexp_loc: loc,
-                                    pexp_attributes: [],
-                                    pexp_desc:
-                                      Pexp_match(
-                                        {
-                                          pexp_loc: loc,
-                                          pexp_attributes: [],
-                                          pexp_desc:
-                                            Pexp_ident({
-                                              txt: Lident(gadtFieldName),
-                                              loc,
-                                            }),
-                                        },
-                                        List.map(
-                                          field =>
-                                            {
-                                              pc_lhs: {
-                                                ppat_loc: loc,
-                                                ppat_attributes: [],
-                                                ppat_desc:
-                                                  Ppat_construct(
-                                                    {
-                                                      loc,
-                                                      txt:
-                                                        Lident(
-                                                          String.capitalize_ascii(
-                                                            field.pld_name.txt,
-                                                          ),
-                                                        ),
-                                                    },
-                                                    None,
-                                                  ),
-                                              },
-                                              pc_guard: None,
-                                              pc_rhs: {
-                                                pexp_loc: loc,
-                                                pexp_attributes: [],
-                                                pexp_desc:
-                                                  Pexp_field(
-                                                    {
-                                                      pexp_loc: loc,
-                                                      pexp_attributes: [],
-                                                      pexp_desc:
-                                                        Pexp_ident({
-                                                          loc,
-                                                          txt:
-                                                            Lident(typeName),
-                                                        }),
-                                                    },
-                                                    {
-                                                      loc,
-                                                      txt:
-                                                        Lident(
-                                                          field.pld_name.txt,
-                                                        ),
-                                                    },
-                                                  ),
-                                              },
-                                            },
-                                          fields,
-                                        ),
-                                      ),
-                                  },
-                                ),
-                            },
-                          ),
-                      },
-                      {
-                        ptyp_loc: loc,
-                        ptyp_attributes: [],
-                        ptyp_desc:
-                          Ptyp_arrow(
-                            Nolabel,
-                            {
-                              ptyp_loc: loc,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_constr(
-                                  {txt: Lident(typeName), loc},
-                                  [],
-                                ),
-                            },
-                            {
-                              ptyp_loc: loc,
-                              ptyp_attributes: [],
-                              ptyp_desc:
-                                Ptyp_arrow(
-                                  Nolabel,
-                                  {
-                                    ptyp_loc: loc,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_constr(
-                                        {txt: Lident(gadtFieldName), loc},
-                                        [
-                                          {
-                                            ptyp_loc: loc,
-                                            ptyp_attributes: [],
-                                            ptyp_desc:
-                                              Ptyp_constr(
-                                                {txt: Lident("value"), loc},
-                                                [],
-                                              ),
-                                          },
-                                        ],
-                                      ),
-                                  },
-                                  {
-                                    ptyp_loc: loc,
-                                    ptyp_attributes: [],
-                                    ptyp_desc:
-                                      Ptyp_constr(
-                                        {txt: Lident("value"), loc},
-                                        [],
-                                      ),
-                                  },
-                                ),
-                            },
-                          ),
-                      },
-                    ),
-                },
-              ),
-          },
-        },
-      ],
-    ),
+  let cases =
+    List.map(
+      field => {
+        Ast_helper.Exp.case(
+          Ast_helper.Pat.construct(
+            {
+              loc,
+              txt: Lident(String.capitalize_ascii(field.pld_name.txt)),
+            },
+            None,
+          ),
+          Ast_helper.Exp.field(
+            ([%expr values]),
+            ({loc, txt: Lident(field.pld_name.txt)}),
+          ),
+        )
+      },
+      fields,
+    );
+
+  let recordType =
+    Ast_helper.Typ.mk(Ptyp_constr({txt: Lident(typeName), loc}, []));
+
+  let typeDefinition =
+    Ast_helper.Typ.poly(
+      [{txt: "value", loc}],
+      [%type: ([%t recordType], field('value)) => 'value],
+    )
+    |> Ast_helper.Typ.force_poly;
+
+  let typeDefinitionFilledWithPolyLocalType = [%type:
+    ([%t recordType], field(value)) => value
+  ];
+
+  let patMatch =
+    Ast_helper.Exp.mk(
+      Pexp_match(
+        Ast_helper.Exp.mk(Pexp_ident({txt: Lident(gadtFieldName), loc})),
+        cases,
+      ),
+    );
+
+  // Properly applying type constraints for the poly local abstract type
+  // https://caml.inria.fr/pub/docs/manual-ocaml/locallyabstract.html#p:polymorpic-locally-abstract
+  let body = [%expr (values, field) => [%e patMatch]];
+  let pat = Ast_helper.Pat.constraint_([%pat? get], typeDefinition);
+  let body =
+    Ast_helper.Exp.constraint_(body, typeDefinitionFilledWithPolyLocalType);
+
+  [%stri let [%p pat] = (type value) => [%e body]];
 };
+
 
 let createGadt = (~fields) => {
   pstr_loc: Location.none,
@@ -586,6 +132,7 @@ let createGadt = (~fields) => {
           ptype_params: [
             (
               {
+                ptyp_loc_stack: [],
                 ptyp_desc: Ptyp_any,
                 ptyp_loc: Location.none,
                 ptyp_attributes: [],
@@ -608,6 +155,7 @@ let createGadt = (~fields) => {
                     pcd_args: Pcstr_tuple([]),
                     pcd_res:
                       Some({
+                        ptyp_loc_stack: [],
                         ptyp_loc: Location.none,
                         ptyp_attributes: [],
                         ptyp_desc:
@@ -616,6 +164,7 @@ let createGadt = (~fields) => {
                             [
                               {
                                 ptyp_desc: field.pld_type.ptyp_desc,
+                                ptyp_loc_stack: [],
                                 ptyp_loc: Location.none,
                                 ptyp_attributes: [],
                               },
@@ -698,9 +247,4 @@ let lensesMapper = (_, _) => {
 };
 
 let () =
-  Driver.register(
-    ~name="lenses-ppx",
-    ~args=[],
-    (module OCaml_406),
-    lensesMapper,
-  );
+  Driver.register(~name="lenses-ppx", Versions.ocaml_410, lensesMapper);
