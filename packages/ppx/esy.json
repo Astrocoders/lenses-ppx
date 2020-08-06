@@ -6,29 +6,27 @@
     "build": "bsb -make-world -backend native",
     "watch": "bsb -make-world -w",
     "postinstall": "npm run build && cp lib/bs/native/lensesppx.native ppx",
-    "dev:rewriter": "ocamlfind ppx_tools/rewriter _build/default/bin/bin.exe test/Test.ml",
+    "dev:rewriter":
+      "ocamlfind ppx_tools/rewriter _build/default/bin/bin.exe test/Test.ml",
     "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
   },
   "esy": {
     "build": "dune build -p #{self.name}",
     "buildsInSource": "_build",
-    "release": {
-      "releasedBinaries": ["bin.exe"]
-    }
+    "release": { "releasedBinaries": [ "bin.exe" ] }
   },
   "dependencies": {
-    "@esy-ocaml/esy-installer": "^0.0.1",
     "@esy-ocaml/reason": "*",
-    "@opam/dune": ">=1.6.0",
-    "@opam/ocaml-migrate-parsetree": "1.2.0",
-    "@opam/menhir": "20171013",
-    "@opam/merlin": "*",
-    "ocaml": "~4.6.1",
-    "refmterr": "*"
+    "@opam/ocaml-migrate-parsetree": "1.7.3",
+    "@opam/ppx_tools_versioned": "5.4.0",
+    "@opam/ppxlib": "*",
+    "ocaml": "4.10.0"
   },
-  "resolutions": {
-    "@esy-ocaml/esy-installer": "0.0.1",
-    "@opam/menhir": "20171013",
-    "@opam/re": "1.8.0"
+  "devDependencies": {
+    "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam",
+    "@opam/menhir": "20200211",
+    "refmterr": "*",
+    "@opam/merlin": "*",
+    "@opam/dune": "*"
   }
 }
