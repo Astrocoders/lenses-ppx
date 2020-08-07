@@ -13,3 +13,15 @@ module User = [%lenses
     age: int;
   };;
 ]
+
+module OnlyOneField = [%lenses
+  type t = {
+    email: string;
+  };;
+]
+
+[@lenses]
+type profile = {
+  name: string;
+  isActive: int;
+};;

@@ -2,25 +2,25 @@
 'use strict';
 
 
-function get(state, field) {
+function get(values, field) {
   if (field) {
-    return state[/* age */1];
+    return values.age;
   } else {
-    return state[/* email */0];
+    return values.email;
   }
 }
 
-function set(state, field, value) {
+function set(values, field, value) {
   if (field) {
-    return /* record */[
-            /* email */state[/* email */0],
-            /* age */value
-          ];
+    return {
+            email: values.email,
+            age: value
+          };
   } else {
-    return /* record */[
-            /* email */value,
-            /* age */state[/* age */1]
-          ];
+    return {
+            email: value,
+            age: values.age
+          };
   }
 }
 
@@ -33,10 +33,10 @@ console.log("fakenickels@brazil.gov.br");
 
 console.log(0);
 
-var state = /* record */[
-  /* email */"fakenickels@brazil.gov.br",
-  /* age */0
-];
+var state = {
+  email: "fakenickels@brazil.gov.br",
+  age: 0
+};
 
 exports.StateLenses = StateLenses;
 exports.state = state;
