@@ -53,12 +53,12 @@ jobs:
         with:
           name: windows-latest
           path: packages/windows
-      - name: Use Node.js 10
-        uses: actions/npm@master
+      - uses: actions/setup-node@v1
         with:
-          version: 10
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          node-version: '10.x'
+          registry-url: <registry url>
+      - run: yarn install
+      - uses: actions/setup-node@v1
       - name: Publish
         run: |
           export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -69,13 +69,13 @@ jobs:
           mv $GITHUB_WORKSPACE/packages/ppx/postinstall.js $GITHUB_WORKSPACE/lenses-ppx/postinstall.js
           POSTINSTALL="node ./postinstall.js"
           echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"scripts\": { \"postinstall\": \"$POSTINSTALL\" } }" > $GITHUB_WORKSPACE/lenses-ppx/package.json
-          echo "//registry.npmjs.org/:_authToken:${NPM_AUTH_TOKEN}" > $HOME/.npmrc
-          # cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
           cd $GITHUB_WORKSPACE/lenses-ppx/ && npm pack
           mv $GITHUB_WORKSPACE/lenses-ppx/lenses-ppx-$PACKAGE_VERSION.tgz $GITHUB_WORKSPACE/lenses-ppx/package.tgz
-
       - name: Save artifacts
         uses: actions/upload-artifact@master
         with:
           name: package
           path: lenses-ppx/package.tgz
+      - run: cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
