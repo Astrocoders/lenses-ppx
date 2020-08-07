@@ -10,9 +10,9 @@ yarn add lenses-ppx@4.0.0 -D
 
 For BuckleScript >= 6
 ```
-npm install --save-dev lenses-ppx@5.1.0
+npm install --save-dev lenses-ppx@latest
 or
-yarn add lenses-ppx@5.1.0 -D
+yarn add lenses-ppx@latest -D
 ```
 
 # Build
@@ -65,7 +65,7 @@ Using
 ```reason
 open StateLenses;
 
-let state = {email: "fakenickels@brazil.gov.br", age: 0};
+let state = {email: "fakenickels@gov.br", age: 969};
 
 Js.log(state->get(Email));
 Js.log(state->get(Age));
