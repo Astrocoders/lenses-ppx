@@ -13,10 +13,7 @@ let createSetLens = (~typeName, ~fields) => {
       field => {
         Ast_helper.Exp.case(
           Ast_helper.Pat.construct(
-            {
-              loc,
-              txt: Lident(String.capitalize_ascii(field.pld_name.txt)),
-            },
+            {loc, txt: Lident(String.capitalize_ascii(field.pld_name.txt))},
             None,
           ),
           Ast_helper.Exp.record(
@@ -68,15 +65,12 @@ let createGetLens = (~typeName, ~fields) => {
       field => {
         Ast_helper.Exp.case(
           Ast_helper.Pat.construct(
-            {
-              loc,
-              txt: Lident(String.capitalize_ascii(field.pld_name.txt)),
-            },
+            {loc, txt: Lident(String.capitalize_ascii(field.pld_name.txt))},
             None,
           ),
           Ast_helper.Exp.field(
-            ([%expr values]),
-            ({loc, txt: Lident(field.pld_name.txt)}),
+            [%expr values],
+            {loc, txt: Lident(field.pld_name.txt)},
           ),
         )
       },
@@ -114,7 +108,6 @@ let createGetLens = (~typeName, ~fields) => {
 
   [%stri let [%p pat] = (type value) => [%e body]];
 };
-
 
 let createGadt = (~fields) => {
   pstr_loc: Location.none,
@@ -218,26 +211,15 @@ let lensesMapper = (_, _) => {
       } =>
       createModule(
         ~typeDef={
-          pstr_loc: Location.none,
-          pstr_desc:
-            Pstr_type(
-              rec_flag,
-              [
-                {
-                  ptype_name: {
-                    txt: typeName,
-                    loc: Location.none,
-                  },
-                  ptype_kind: Ptype_record(fields),
-                  ptype_params: [],
-                  ptype_cstrs: [],
-                  ptype_private: Public,
-                  ptype_manifest: None,
-                  ptype_attributes: [],
-                  ptype_loc: Location.none,
-                },
-              ],
-            ),
+          Ast_helper.Str.type_(
+            rec_flag,
+            [
+              Ast_helper.Type.mk(
+                ~kind=Ptype_record(fields),
+                {txt: typeName, loc: Location.none},
+              ),
+            ],
+          );
         },
         ~typeName,
         ~fields,
