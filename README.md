@@ -1,3 +1,6 @@
+# What are GADTs?
+[GADTs: A primer](https://sketch.sh/s/yH0MJiujNSiofDWOU85loX/)
+
 # Install
 Install the last stable version
 
