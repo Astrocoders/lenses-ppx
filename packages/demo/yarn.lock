@@ -6,3 +6,8 @@ bs-platform@7:
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-7.3.2.tgz#301f5c9b4e8cf5713cb60ca22e145e56e793affe"
   integrity sha512-seJL5g4anK9la4erv+B2o2sMHQCxDF6OCRl9en3hbaUos/S3JsusQ0sPp4ORsbx5eXfHLYBwPljwKXlgpXtsgQ==
+
+decco@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/decco/-/decco-1.3.0.tgz#25a130a4638fcf2088f713fe871e58308604c0cb"
+  integrity sha512-pednHg+Skby+sw193hbHTRLihZskmXrPsVMlqL9XpuLm+HfwMgS76lFRAkTGAi3435q0TBygTpt8McVTyk4Sfw==
