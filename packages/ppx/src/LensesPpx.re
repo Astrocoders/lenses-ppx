@@ -5,9 +5,8 @@ open Asttypes;
 open Parsetree;
 open Ast_helper;
 
-let gadtFieldName = "field";
 let loc = Location.none;
-let createSetLens = (~typeName, ~fields) => {
+let createSetLens = (~typeName, ~gadtFieldName, ~prefix="", ~fields, ()) => {
   let cases =
     List.map(
       field => {
@@ -30,21 +29,31 @@ let createSetLens = (~typeName, ~fields) => {
   let recordType =
     Ast_helper.Typ.mk(Ptyp_constr({txt: Lident(typeName), loc}, []));
 
+  let gadtTypePoly =
+    Ast_helper.Typ.mk(
+      Ptyp_constr({txt: Lident(gadtFieldName), loc}, [[%type: 'value]]),
+    );
+
+  let gadtTypeLocal =
+    Ast_helper.Typ.mk(
+      Ptyp_constr({txt: Lident(gadtFieldName), loc}, [[%type: value]]),
+    );
+
   let typeDefinition =
     Ast_helper.Typ.poly(
       [{txt: "value", loc}],
-      [%type: ([%t recordType], field('value), 'value) => [%t recordType]],
+      [%type: ([%t recordType], [%t gadtTypePoly], 'value) => [%t recordType]],
     )
     |> Ast_helper.Typ.force_poly;
 
   let typeDefinitionFilledWithPolyLocalType = [%type:
-    ([%t recordType], field(value), value) => [%t recordType]
+    ([%t recordType], [%t gadtTypeLocal], value) => [%t recordType]
   ];
 
   let patMatch =
     Ast_helper.Exp.mk(
       Pexp_match(
-        Ast_helper.Exp.mk(Pexp_ident({txt: Lident(gadtFieldName), loc})),
+        Ast_helper.Exp.mk(Pexp_ident({txt: Lident("field"), loc})),
         cases,
       ),
     );
@@ -52,14 +61,15 @@ let createSetLens = (~typeName, ~fields) => {
   // Properly applying type constraints for the poly local abstract type
   // https://caml.inria.fr/pub/docs/manual-ocaml/locallyabstract.html#p:polymorpic-locally-abstract
   let body = [%expr (values, field, value) => [%e patMatch]];
-  let pat = Ast_helper.Pat.constraint_([%pat? set], typeDefinition);
+  let fnName = Ast_helper.Pat.var({txt: prefix ++ "set", loc});
+  let pat = Ast_helper.Pat.constraint_(fnName, typeDefinition);
   let body =
     Ast_helper.Exp.constraint_(body, typeDefinitionFilledWithPolyLocalType);
 
   [%stri let [%p pat] = (type value) => [%e body]];
 };
 
-let createGetLens = (~typeName, ~fields) => {
+let createGetLens = (~typeName, ~gadtFieldName, ~prefix="", ~fields, ()) => {
   let cases =
     List.map(
       field => {
@@ -80,21 +90,31 @@ let createGetLens = (~typeName, ~fields) => {
   let recordType =
     Ast_helper.Typ.mk(Ptyp_constr({txt: Lident(typeName), loc}, []));
 
+  let gadtTypePoly =
+    Ast_helper.Typ.mk(
+      Ptyp_constr({txt: Lident(gadtFieldName), loc}, [[%type: 'value]]),
+    );
+
+  let gadtTypeLocal =
+    Ast_helper.Typ.mk(
+      Ptyp_constr({txt: Lident(gadtFieldName), loc}, [[%type: value]]),
+    );
+
   let typeDefinition =
     Ast_helper.Typ.poly(
       [{txt: "value", loc}],
-      [%type: ([%t recordType], field('value)) => 'value],
+      [%type: ([%t recordType], [%t gadtTypePoly]) => 'value],
     )
     |> Ast_helper.Typ.force_poly;
 
   let typeDefinitionFilledWithPolyLocalType = [%type:
-    ([%t recordType], field(value)) => value
+    ([%t recordType], [%t gadtTypeLocal]) => value
   ];
 
   let patMatch =
     Ast_helper.Exp.mk(
       Pexp_match(
-        Ast_helper.Exp.mk(Pexp_ident({txt: Lident(gadtFieldName), loc})),
+        Ast_helper.Exp.mk(Pexp_ident({txt: Lident("field"), loc})),
         cases,
       ),
     );
@@ -102,14 +122,16 @@ let createGetLens = (~typeName, ~fields) => {
   // Properly applying type constraints for the poly local abstract type
   // https://caml.inria.fr/pub/docs/manual-ocaml/locallyabstract.html#p:polymorpic-locally-abstract
   let body = [%expr (values, field) => [%e patMatch]];
-  let pat = Ast_helper.Pat.constraint_([%pat? get], typeDefinition);
+  let fnName = Ast_helper.Pat.var({txt: prefix ++ "get", loc});
+
+  let pat = Ast_helper.Pat.constraint_(fnName, typeDefinition);
   let body =
     Ast_helper.Exp.constraint_(body, typeDefinitionFilledWithPolyLocalType);
 
   [%stri let [%p pat] = (type value) => [%e body]];
 };
 
-let createGadt = (~fields) => {
+let createGadt = (~gadtFieldName, ~fields) => {
   pstr_loc: Location.none,
   pstr_desc:
     Pstr_type(
@@ -175,24 +197,83 @@ let createGadt = (~fields) => {
     ),
 };
 
+let createStructureLenses =
+    (~typeName, ~gadtFieldName, ~prefix=?, ~fields, ()) => {
+  [
+    createGadt(~gadtFieldName, ~fields),
+    createGetLens(~typeName, ~gadtFieldName, ~prefix?, ~fields, ()),
+    createSetLens(~typeName, ~gadtFieldName, ~prefix?, ~fields, ()),
+  ];
+};
+
 let createModule = (~typeDef, ~typeName, ~fields) =>
   Mod.mk(
     Pmod_structure([
       typeDef,
-      createGadt(~fields),
-      createGetLens(~typeName, ~fields),
-      createSetLens(~typeName, ~fields),
+      ...createStructureLenses(
+           ~typeName,
+           ~gadtFieldName="field",
+           ~fields,
+           (),
+         ),
     ]),
   );
 
+// Heavily borrowed from Decco's code
+module StructureMapper = {
+  open Utils;
+  let mapTypeDecl = decl => {
+    let {
+      ptype_attributes,
+      ptype_name: {txt: typeName, _},
+      ptype_manifest,
+      ptype_loc,
+      ptype_kind,
+      _,
+    } = decl;
+
+    switch (getSettingsFromAttributes(ptype_attributes)) {
+    | Ok(Some({lenses: true})) =>
+      switch (ptype_manifest, ptype_kind) {
+      | (None, Ptype_abstract) =>
+        fail(ptype_loc, "Can't generate lenses for unspecified type")
+      | (None, Ptype_record(fields)) =>
+        createStructureLenses(
+          ~typeName,
+          ~gadtFieldName=typeName ++ "_" ++ "field",
+          ~prefix=typeName ++ "_",
+          ~fields,
+          (),
+        )
+      | _ => fail(ptype_loc, "This type is not handled by lenses-ppx")
+      }
+    | Ok(Some({lenses: false}))
+    | Ok(None) => []
+    | Error(s) => fail(ptype_loc, s)
+    };
+  };
+  let mapStructureItem = (mapper, {pstr_desc, _} as structureItem) =>
+    switch (pstr_desc) {
+    | Pstr_type(_recFlag, decls) =>
+      let valueBindings = decls |> List.map(mapTypeDecl) |> List.concat;
+      [mapper.structure_item(mapper, structureItem)]
+      @ (List.length(valueBindings) > 0 ? valueBindings : []);
+
+    | _ => [mapper.structure_item(mapper, structureItem)]
+    };
+  let mapStructure = (mapper, structure) =>
+    structure |> List.map(mapStructureItem(mapper)) |> List.concat;
+};
+
 let lensesMapper = (_, _) => {
   ...default_mapper,
+  structure: StructureMapper.mapStructure,
   module_expr: (mapper, expr) =>
     switch (expr) {
     | {
         pmod_desc:
           Pmod_extension((
-            {txt: "lenses"},
+            {txt: "lenses", _},
             PStr([
               {
                 pstr_desc:
@@ -200,14 +281,17 @@ let lensesMapper = (_, _) => {
                     rec_flag,
                     [
                       {
-                        ptype_name: {txt: typeName},
+                        ptype_name: {txt: typeName, _},
                         ptype_kind: Ptype_record(fields),
+                        _,
                       },
                     ],
                   ),
+                _,
               },
             ]),
           )),
+        _,
       } =>
       createModule(
         ~typeDef={

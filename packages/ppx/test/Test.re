@@ -6,3 +6,9 @@ module State = [%lenses
 ];
 
 let state: State.state = {email: "", age: 0};
+
+[%lenses]
+type profile = {
+  email: string,
+  age: int,
+}

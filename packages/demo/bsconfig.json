@@ -11,12 +11,14 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
+    "decco"
   ],
   "warnings": {
     "error" : "+101"
   },
   "refmt": 3,
   "ppx-flags": [
+    "decco/ppx",
     "../ppx/_build/default/bin/bin.exe"
   ]
 }
