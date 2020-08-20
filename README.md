@@ -73,3 +73,20 @@ let state = {email: "fakenickels@gov.br", age: 969};
 Js.log(state->get(Email));
 Js.log(state->get(Age));
 ```
+
+
+Alternatively you can also use it like
+```reason
+[@lenses]
+[@decco]
+type bartux = {
+  color: string,
+  top: int,
+};
+
+let bartux = {color: "red", top: 10};
+
+Js.log(bartux->bartux_get(Color));
+Js.log(bartux->bartux_set(Top, 20));
+Js.log(bartux_encode(bartux));
+```
