@@ -76,8 +76,7 @@ jobs:
         with:
           name: package
           path: lenses-ppx/package.tgz
-      - name: Prepare .npmrc for publishing
-        run: echo "Ly9yZWdpc3RyeS5ucG1qcy5vcmcvOl9hdXRoVG9rZW49JHtOUE1fQVVUSF9UT0tFTn0KcmVnaXN0cnk9aHR0cHM6Ly9yZWdpc3RyeS5ucG1qcy5vcmcvCmFsd2F5cy1hdXRoPXRydWUK" | base64 -d | tee $GITHUB_WORKSPACE/lenses-ppx/.npmrc
-      - run: cd $GITHUB_WORKSPACE/lenses-ppx/ && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NODE_AUTH_TOKEN }}
+          package: ./packages/lenses-ppx/package.json
