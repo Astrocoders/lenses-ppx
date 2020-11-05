@@ -79,4 +79,4 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NODE_AUTH_TOKEN }}
-          package: ./packages/lenses-ppx/package.json
+          package: $GITHUB_WORKSPACE/packages/lenses-ppx/package.json
