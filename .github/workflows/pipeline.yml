@@ -76,7 +76,12 @@ jobs:
         with:
           name: package
           path: lenses-ppx/package.tgz
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NODE_AUTH_TOKEN }}
-          package: $GITHUB_WORKSPACE/packages/lenses-ppx/package.json
+
+      - name: Publish NPM package
+        run: |
+          npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npm config list
+          npm publish --access public
+        working-directory: $GITHUB_WORKSPACE/packages/lenses-ppx/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
