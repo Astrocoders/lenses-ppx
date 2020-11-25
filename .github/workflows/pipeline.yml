@@ -22,11 +22,13 @@ jobs:
 
       - run: npm i -g esy
       - run: |
-          cd packages/ppx
+          cd packages
+          cd ppx
           esy install
 
       - run: |
-          cd packages/ppx
+          cd packages
+          cd ppx
           esy build
 
       - uses: actions/upload-artifact@v2
