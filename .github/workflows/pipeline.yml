@@ -88,8 +88,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       - run: |
-          git config --global user.email "action@github.com" 
-          git config --global user.name "GitHub CI/CD"
+          git config --global user.email "github-actions@github.com" 
+          git config --global user.name "github-actions[bot]"
           git commit --message "Update package.json" --all
 
       - uses: ad-m/github-push-action@master
