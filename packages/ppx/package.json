@@ -4,6 +4,7 @@
   "scripts": {
     "build": "esy build",
     "dev:rewriter": "ocamlfind ppx_tools/rewriter _build/default/bin/bin.exe test/Test.ml",
-    "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
+    "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml",
+    "postinstall": "node postinstall.js"
   }
 }

@@ -1,4 +1,4 @@
-name: CI
+name: npm-publish
 
 on:
   push:
@@ -10,73 +10,89 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node_version: [10]
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        node_version: [14]
+        os: [macOS-latest, ubuntu-latest, windows-latest]
+
     steps:
-      - uses: actions/checkout@master
-      - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ matrix.node_version }}
-      - name: install esy
-        run: npm i -g esy
-      - name: esy install
-        run: |
+
+      - run: npm i -g esy
+      - run: |
           cd packages
           cd ppx
           esy install
-      - name: esy build
-        run: |
+
+      - run: |
           cd packages
           cd ppx
           esy build
-      - name: Save artifacts
-        uses: actions/upload-artifact@master
+
+      - uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}
           path: packages/ppx/_build/default/bin/bin.exe
 
   release:
-    runs-on: ubuntu-latest
     needs: [build]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/download-artifact@master
+      - uses: actions/checkout@v2
         with:
-          name: ubuntu-latest
-          path: packages/linux
-      - uses: actions/download-artifact@master
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v2
         with:
           name: macOS-latest
           path: packages/darwin
-      - uses: actions/download-artifact@master
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: ubuntu-latest
+          path: packages/linux
+
+      - uses: actions/download-artifact@v2
         with:
           name: windows-latest
           path: packages/windows
-      - uses: actions/setup-node@v1
+
+      - uses: actions/setup-node@v2-beta
         with:
-          node-version: '10.x'
-          registry-url: <registry url>
-      - run: yarn install
-      - uses: actions/setup-node@v1
-      - name: Publish
-        run: |
-          export PACKAGE_VERSION=$(cat $GITHUB_WORKSPACE/packages/ppx/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-          mkdir -p $GITHUB_WORKSPACE/lenses-ppx
-          mv $GITHUB_WORKSPACE/packages/darwin/bin.exe $GITHUB_WORKSPACE/lenses-ppx/darwin
-          mv $GITHUB_WORKSPACE/packages/linux/bin.exe $GITHUB_WORKSPACE/lenses-ppx/linux
-          mv $GITHUB_WORKSPACE/packages/windows/bin.exe $GITHUB_WORKSPACE/lenses-ppx/win32
-          mv $GITHUB_WORKSPACE/packages/ppx/postinstall.js $GITHUB_WORKSPACE/lenses-ppx/postinstall.js
-          POSTINSTALL="node ./postinstall.js"
-          echo "{\"name\": \"lenses-ppx\", \"version\": \"$PACKAGE_VERSION\", \"scripts\": { \"postinstall\": \"$POSTINSTALL\" } }" > $GITHUB_WORKSPACE/lenses-ppx/package.json
-          cd $GITHUB_WORKSPACE/lenses-ppx/ && npm pack
-          mv $GITHUB_WORKSPACE/lenses-ppx/lenses-ppx-$PACKAGE_VERSION.tgz $GITHUB_WORKSPACE/lenses-ppx/package.tgz
-      - name: Save artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: package
-          path: lenses-ppx/package.tgz
-      - run: npm publish --access public
-        working-directory: ./lenses-ppx
+          node-version: "14"
+          registry-url: https://registry.npmjs.org/
+      
+      - run: mkdir -p $GITHUB_WORKSPACE/tarball
+      - run: |
+          cd packages/ppx
+          npm version patch
+
+      - run: |
+          cd packages/ppx
+          cp package.json $GITHUB_WORKSPACE/tarball
+          cp postinstall.js $GITHUB_WORKSPACE/tarball
+
+      - run: |
+          cd packages
+          cp darwin/bin.exe $GITHUB_WORKSPACE/tarball/darwin
+          cp linux/bin.exe $GITHUB_WORKSPACE/tarball/linux
+          cp windows/bin.exe $GITHUB_WORKSPACE/tarball/win32
+
+      - run: |
+          cd $GITHUB_WORKSPACE/tarball
+          npm publish $(npm pack | tail -1) --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}   
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+
+      - run: |
+          git config --global user.email "action@github.com" 
+          git config --global user.name "GitHub CI/CD"
+          git commit --message "Update package.json" --all
+
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
