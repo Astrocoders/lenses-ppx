@@ -19,11 +19,8 @@ jobs:
       - uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ matrix.node_version }}
-
-      - run: npm i -g esy@0.6.8-glibc.beta.1 # temp workaround https://github.com/esy/esy/issues/1190#issuecomment-717688606
-        if: matrix.os == 'ubuntu-latest' # esy@0.6.8-glibc.beta.1 doesn't work on mac or windows lol
-      - run: npm i -g esy@0.6.7 # temp workaround https://github.com/esy/esy/issues/1190#issuecomment-717688606
-        if: matrix.os != 'ubuntu-latest'
+          
+      - run: npm i -g @esy-nightly/esy
       - run: |
           cd packages
           cd ppx
