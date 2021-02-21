@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
 
-      - run: npm i -g @esy-nightly/esy@0.6.8-7a5305 # temp workaround https://github.com/esy/esy/issues/1190#issuecomment-717688606
+      - run: npm i -g esy@0.6.8-glibc.beta.1 # temp workaround https://github.com/esy/esy/issues/1190#issuecomment-717688606
       - run: |
           cd packages
           cd ppx
