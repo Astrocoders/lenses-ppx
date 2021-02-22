@@ -6,12 +6,39 @@ on:
       - master
 
 jobs:
+  build_linux:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node_version: [14]
+
+    container:
+      image: cichocinski/docker-esy:alpine3.8
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node_version }}
+
+      - run: esy install
+        working-directory: packages/ppx
+
+      - run: esy release-static
+        working-directory: packages/ppx
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}
+          path: packages/ppx/_build/default/bin/bin.exe
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         node_version: [14]
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        os: [macOS-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,15 +48,11 @@ jobs:
           node-version: ${{ matrix.node_version }}
           
       - run: npm i -g esy
-      - run: |
-          cd packages
-          cd ppx
-          esy install
+      - run: esy install
+        working-directory: packages/ppx
 
-      - run: |
-          cd packages
-          cd ppx
-          esy build
+      - run: esy build
+        working-directory: packages/ppx
 
       - uses: actions/upload-artifact@v2
         with:
@@ -37,7 +60,7 @@ jobs:
           path: packages/ppx/_build/default/bin/bin.exe
 
   release:
-    needs: [build]
+    needs: [build, build_linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -6,12 +6,13 @@
     "build": "bsb -make-world -backend native",
     "watch": "bsb -make-world -w",
     "postinstall": "npm run build && cp lib/bs/native/lensesppx.native ppx",
+    "release-static": "dune build --root . --only-packages '#{self.name}' --ignore-promoted-rules --no-config --profile release-static",
     "dev:rewriter":
       "ocamlfind ppx_tools/rewriter _build/default/bin/bin.exe test/Test.ml",
     "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
   },
   "esy": {
-    "build": "dune build -p #{self.name}",
+    "build": [["dune", "build", "-p", "#{self.name}"]],
     "buildsInSource": "_build",
     "release": { "releasedBinaries": [ "bin.exe" ] }
   },
@@ -24,7 +25,6 @@
   },
   "devDependencies": {
     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam",
-    "@opam/menhir": "20200211",
     "refmterr": "*",
     "@opam/merlin": "*",
     "@opam/dune": "*"

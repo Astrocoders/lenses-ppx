@@ -1,6 +1,6 @@
 {
   "name": "lenses-ppx",
-  "version": "6.1.7",
+  "version": "6.1.9",
   "scripts": {
     "build": "esy build",
     "dev:rewriter": "ocamlfind ppx_tools/rewriter _build/default/bin/bin.exe test/Test.ml",
