@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
           
-      - run: npm i -g @esy-nightly/esy
+      - run: npm i -g esy
       - run: |
           cd packages
           cd ppx
