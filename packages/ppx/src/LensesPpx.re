@@ -1,6 +1,4 @@
-open Migrate_parsetree;
-open Ast_410;
-open Ast_mapper;
+open Ppxlib;
 open Asttypes;
 open Parsetree;
 open Ast_helper;
@@ -152,7 +150,7 @@ let createGadt = (~gadtFieldName, ~fields) => {
                 ptyp_loc: Location.none,
                 ptyp_attributes: [],
               },
-              Invariant,
+              (NoVariance, NoInjectivity),
             ),
           ],
           ptype_cstrs: [],
@@ -256,19 +254,25 @@ module StructureMapper = {
     switch (pstr_desc) {
     | Pstr_type(_recFlag, decls) =>
       let valueBindings = decls |> List.map(mapTypeDecl) |> List.concat;
-      [mapper.structure_item(mapper, structureItem)]
+      [mapper#structure_item(structureItem)]
       @ (List.length(valueBindings) > 0 ? valueBindings : []);
 
-    | _ => [mapper.structure_item(mapper, structureItem)]
+    | _ => [mapper#structure_item(structureItem)]
     };
   let mapStructure = (mapper, structure) =>
     structure |> List.map(mapStructureItem(mapper)) |> List.concat;
 };
 
-let lensesMapper = (_, _) => {
-  ...default_mapper,
-  structure: StructureMapper.mapStructure,
-  module_expr: (mapper, expr) =>
+
+class lensesMapper = {
+  as self;
+  inherit class Ast_traverse.map as super;
+
+  pub! structure = structure => {
+    StructureMapper.mapStructure(self, structure);
+  };
+
+  pub! module_expr = expr => {
     switch (expr) {
     | {
         pmod_desc:
@@ -308,9 +312,16 @@ let lensesMapper = (_, _) => {
         ~typeName,
         ~fields,
       )
-    | _ => default_mapper.module_expr(mapper, expr)
-    },
+    | _ => super#module_expr(expr)
+    };
+  };
 };
 
+let structure_mapper = s => (new lensesMapper)#structure(s);
+
 let () =
-  Driver.register(~name="lenses-ppx", Versions.ocaml_410, lensesMapper);
+  Driver.register_transformation(
+    ~preprocess_impl=structure_mapper,
+    "lenses-ppx"
+  );
+
