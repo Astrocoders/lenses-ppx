@@ -12,16 +12,17 @@
     "dev:dumpast": "ocamlfind ppx_tools/dumpast test/Wanted.ml"
   },
   "esy": {
-    "build": [["dune", "build", "-p", "#{self.name}"]],
     "buildsInSource": "_build",
     "release": { "releasedBinaries": [ "bin.exe" ] }
   },
   "dependencies": {
     "@esy-ocaml/reason": "*",
-    "@opam/ocaml-migrate-parsetree": "1.7.3",
-    "@opam/ppx_tools_versioned": "5.4.0",
+    "@opam/ppxlib": ">=0.22.0",
     "@opam/ppxlib": "*",
-    "ocaml": "4.10.0"
+    "ocaml": "4.12.0+BS"
+  },
+  "resolutions": {
+     "ocaml": "anmonteiro/ocaml#75f22c8"
   },
   "devDependencies": {
     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam",
