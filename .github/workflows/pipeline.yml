@@ -1,9 +1,11 @@
 name: npm-publish
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Optional tag name"
+        required: false
 
 jobs:
   build_linux:
