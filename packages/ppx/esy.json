@@ -18,7 +18,6 @@
   "dependencies": {
     "@esy-ocaml/reason": "*",
     "@opam/ppxlib": ">=0.22.0",
-    "@opam/ppxlib": "*",
     "ocaml": "4.12.0+BS"
   },
   "resolutions": {
