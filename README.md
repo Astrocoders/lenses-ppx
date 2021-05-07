@@ -90,3 +90,8 @@ Js.log(bartux->bartux_get(Color));
 Js.log(bartux->bartux_set(Top, 20));
 Js.log(bartux_encode(bartux));
 ```
+
+
+Alternatives
+
+- https://github.com/scoville/re-optic/blob/master/docs/lenses-ppx.md which is more strict and follows more closely Optics standards
