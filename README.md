@@ -1,6 +1,9 @@
 # What are GADTs?
 [GADTs: A primer](https://sketch.sh/s/yH0MJiujNSiofDWOU85loX/)
 
+# Why
+Differently from normal lenses/optics the following approach allows for composing "lenses" into lists/arrays which is them useful for things like https://github.com/rescriptbr/reschema
+
 # Install
 Install the last stable version
 
