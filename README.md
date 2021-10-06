@@ -7,18 +7,18 @@ Differently from normal lenses/optics the following approach allows for composin
 # Install
 Install the last stable version
 
+For ReScript
+```
+npm install --save-dev lenses-ppx@latest
+or
+yarn add lenses-ppx@latest -D
+```
+
 For BuckleScript < 6
 ```
 npm install --save-dev lenses-ppx@4.0.0
 or
 yarn add lenses-ppx@4.0.0 -D
-```
-
-For BuckleScript >= 6
-```
-npm install --save-dev lenses-ppx@latest
-or
-yarn add lenses-ppx@latest -D
 ```
 
 # Build
