@@ -1,4 +1,6 @@
-# What are GADTs?
+# lenses-ppx
+
+## What are GADTs?
 [GADTs: A primer](https://sketch.sh/s/yH0MJiujNSiofDWOU85loX/)
 
 # Why
