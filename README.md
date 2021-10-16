@@ -33,7 +33,7 @@ npm run watch
 ```
 
 In
-```reason
+```rescript
 module StateLenses = %lenses(
   type state = {
     email: string,
@@ -44,7 +44,7 @@ module StateLenses = %lenses(
 
 Out
 
-```reason
+```rescript
 module StateLenses = {
   type state = {
     email: string,
@@ -70,7 +70,7 @@ module StateLenses = {
 }
 ```
 Using
-```reason
+```rescript
 open StateLenses
 
 let state = {email: "fakenickels@gov.br", age: 969}
@@ -81,7 +81,7 @@ Js.log(state->get(Age))
 
 
 Alternatively you can also use it like
-```reason
+```rescript
 @lenses @decco
 type bartux = {
   color: string,
